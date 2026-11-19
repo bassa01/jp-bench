@@ -88,7 +88,10 @@ _SCORERS = {
 def score_task(task: Task, pred: dict[str, Any] | None, gold: dict[str, Any]) -> TaskResult:
     if pred is None:
         return TaskResult(task.id, False, 0.0, "no prediction")
-    return _SCORERS[task.success.type](task, pred, gold)
+    scorer = _SCORERS.get(task.success.type)
+    if scorer is None:
+        raise ValueError(f"[{task.id}] no scorer registered for type {task.success.type!r}")
+    return scorer(task, pred, gold)
 
 
 def score_all(
