@@ -105,8 +105,10 @@ def cmd_report(args: argparse.Namespace) -> int:
         lines.append(f"| {r.task_id} | {'PASS' if r.passed else 'FAIL'} | {r.score:.2f} | {r.detail} |")
     lines += [
         "",
-        f"Passed {summary['passed']}/{summary['total']} ({summary['pass_rate']:.1%}), "
-        f"mean score {summary['mean_score']:.3f}",
+        (
+            f"Passed {summary['passed']}/{summary['total']} ({summary['pass_rate']:.1%}), "
+            f"mean score {summary['mean_score']:.3f}"
+        ),
         "",
         "| difficulty | passed | total |",
         "|---|---|---|",
