@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .normalize import normalize_field, normalize_number, normalize_text
@@ -16,6 +16,8 @@ class TaskResult:
     passed: bool
     score: float
     detail: str
+    field_results: dict[str, bool] = field(default_factory=dict)
+    confidence: float = 1.0
 
     def to_dict(self) -> dict[str, Any]:
         return {"task_id": self.task_id, "passed": self.passed, "score": self.score, "detail": self.detail}
@@ -24,15 +26,18 @@ class TaskResult:
 def _field_match(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
     hits = 0
     misses: list[str] = []
+    per_field: dict[str, bool] = {}
     for name in task.success.fields:
         value = pred.get(name)
-        if name in pred and normalize_field(name, "" if value is None else value) == normalize_field(name, gold[name]):
+        ok = name in pred and normalize_field(name, "" if value is None else value) == normalize_field(name, gold[name])
+        per_field[name] = ok
+        if ok:
             hits += 1
         else:
             misses.append(name)
     score = hits / len(task.success.fields)
     detail = "all fields match" if not misses else f"mismatch: {', '.join(misses)}"
-    return TaskResult(task.id, not misses, score, detail)
+    return TaskResult(task.id, not misses, score, detail, field_results=per_field)
 
 
 def _numeric_tolerance(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
@@ -88,7 +93,32 @@ def _reached_state(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> Ta
     return TaskResult(task.id, passed, 1.0 if passed else 0.0, detail)
 
 
+_TRUE_WORDS = {"true", "yes", "はい", "有", "有効", "あり"}
+_FALSE_WORDS = {"false", "no", "いいえ", "無", "無効", "なし"}
+
+
+def _to_bool(value: Any) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    text = normalize_text("" if value is None else value).lower()
+    if text in {normalize_text(w).lower() for w in _TRUE_WORDS}:
+        return True
+    if text in {normalize_text(w).lower() for w in _FALSE_WORDS}:
+        return False
+    return None
+
+
+def _boolean(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
+    name = task.success.fields[0]
+    got = _to_bool(pred.get(name))
+    want = _to_bool(gold[name])
+    passed = got is not None and got == want
+    detail = "boolean matches" if passed else f"expected {want}, got {pred.get(name)!r}"
+    return TaskResult(task.id, passed, 1.0 if passed else 0.0, detail)
+
+
 _SCORERS = {
+    "boolean": _boolean,
     "field_match": _field_match,
     "numeric_tolerance": _numeric_tolerance,
     "set_overlap": _set_overlap,
