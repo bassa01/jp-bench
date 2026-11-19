@@ -9,9 +9,10 @@ agent for those differences, only for wrong values.
 from __future__ import annotations
 
 import datetime
+import math
 import re
 import unicodedata
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 _ENTITY_ABBREVIATIONS = {
     "(株)": "株式会社",
@@ -30,6 +31,9 @@ _ENTITY_ABBREVIATIONS = {
     "（一社）": "一般社団法人",
     "(一財)": "一般財団法人",
     "（一財）": "一般財団法人",
+    "・": "・",
+    "･": "・",
+    "·": "・",
 }
 
 _ERA_OFFSETS = {"令和": 2018, "平成": 1988, "昭和": 1925}
@@ -93,23 +97,58 @@ def normalize_date(value: object) -> str:
 
 
 def normalize_number(value: object) -> float:
-    """Parse numbers written with commas, full-width digits or 円/人 suffixes."""
-    text = unicodedata.normalize("NFKC", str(value))
-    text = re.sub(r"[,\s円人件%]", "", text)
-    return float(text)
+    """Parse numbers with commas, full-width digits, 円/¥ and 万/億 scales; 無料 is 0."""
+    text = unicodedata.normalize("NFKC", str(value)).strip()
+    if text == "無料":
+        return 0.0
+    scale = 1.0
+    if "億" in text:
+        scale = 1e8
+    elif "万" in text:
+        scale = 1e4
+    text = re.sub(r"[,\s円人件%¥億万]", "", text)
+    number = float(text)
+    if not math.isfinite(number):
+        raise ValueError("number must be finite")
+    return number * scale
 
 
 def normalize_url(value: object) -> str:
-    """Lowercase scheme and host, drop fragment and trailing slash."""
+    """Canonical URL: lowercase host, https for .go.jp, no www, no :443, no utm_ params, sorted query."""
     parts = urlsplit(normalize_text(value))
-    path = parts.path.rstrip("/")
-    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), path, parts.query, ""))
+    scheme = parts.scheme.lower()
+    host = (parts.hostname or "").lower()
+    netloc = parts.netloc.lower()
+    if host.endswith(".go.jp") and scheme == "http":
+        scheme = "https"
+    if scheme == "https" and netloc.endswith(":443"):
+        netloc = netloc[: -len(":443")]
+    netloc = netloc.removeprefix("www.")
+    path = unquote(parts.path).rstrip("/")
+    pairs = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True) if not k.startswith("utm_")]
+    return urlunsplit((scheme, netloc, path, urlencode(sorted(pairs)), ""))
 
 
 def normalize_article_ref(value: object) -> str:
     """Canonical statute reference: 第3条の2, not 第３条之２ or 第3条 の 2."""
     text = unicodedata.normalize("NFKC", str(value))
     return _SPACE_RE.sub("", text).replace("之", "の")
+
+
+def normalize_corporate_number(value: object) -> str:
+    """The 13 digits of a corporate number, with spaces and hyphens removed."""
+    return re.sub(r"\D", "", unicodedata.normalize("NFKC", str(value)))
+
+
+def normalize_invoice_number(value: object) -> str:
+    """Upper-case T prefix and no spaces; a body that is not T + 13 digits stays unequal to any gold."""
+    return re.sub(r"\s", "", unicodedata.normalize("NFKC", str(value))).upper()
+
+
+def normalize_list(values: object) -> str:
+    """Normalize each element, drop empties, dedupe, sort, and join with |."""
+    items = {normalize_text(v) for v in (values or []) if normalize_text(v)}
+    return "|".join(sorted(items))
 
 
 def normalize_postal_code(value: object) -> str:
@@ -149,6 +188,12 @@ def normalize_field(name: str, value: object) -> str:
         return normalize_url(value)
     if name.endswith("_article"):
         return normalize_article_ref(value)
+    if name.endswith("corporate_number"):
+        return normalize_corporate_number(value)
+    if name.endswith("invoice_number"):
+        return normalize_invoice_number(value)
+    if name.endswith("_list"):
+        return normalize_list(value)
     if name.endswith("postal_code"):
         return normalize_postal_code(value)
     if name.endswith("phone"):
