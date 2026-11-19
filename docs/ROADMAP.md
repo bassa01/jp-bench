@@ -383,39 +383,39 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 372. [x] prompt: record a stable hash of each rendered prompt
 373. [x] prompt: reject prompts over a length limit
 374. [x] parse: extract JSON answers and detect refusals in model output
-375. [ ] prompt: add `--lang` option to `prompt` command (exists; add test for ja output)
+375. [x] prompt: add `--lang` option to `prompt` command (exists; add test for ja output)
 376. [ ] prompt: add system prompt slot in template
-377. [ ] prompt: add a stricter output-format footer for JSON-only answers
+377. [x] prompt: add a stricter output-format footer for JSON-only answers
 378. [ ] prompt: add explicit instruction to stop before submit on form tasks (already present; test it)
 379. [ ] prompt: include today's date placeholder for deadline questions
 380. [ ] prompt: include the portal's operating hours note when relevant
-381. [ ] prompt: escape `{` and `}` in inputs so JSON dumps cannot break templates
+381. [x] prompt: escape `{` and `}` in inputs so JSON dumps cannot break templates
 382. [ ] prompt: include an explicit "not found" option for abstain-capable tasks
 383. [ ] prompt: add few-shot examples file per task (optional)
 384. [ ] prompt: load few-shot examples from `examples/<task>.yaml`
 385. [ ] prompt: cap number of few-shot examples at 3
 386. [ ] prompt: validate few-shot example answers against the task schema
 387. [ ] prompt: render few-shot examples in the same language as the prompt
-388. [ ] prompt: add prompt template version to the rendered header
+388. [x] prompt: add prompt template version to the rendered header
 389. [ ] prompt: store template version in run metadata
 390. [ ] prompt: add `prompt --diff` to compare ja and en renderings
-391. [ ] prompt: add `prompt --json` to emit the prompt as a JSON object
+391. [x] prompt: add `prompt --json` to emit the prompt as a JSON object
 392. [ ] prompt: add `prompt --write <dir>` to save all prompts to files
 393. [ ] prompt: name saved prompt files by task id and language
 394. [ ] prompt: add a checksum manifest for saved prompts
 395. [ ] prompt: test that saved prompts match the manifest
-396. [ ] prompt: remove trailing whitespace in rendered output
-397. [ ] prompt: normalize line endings to LF
-398. [ ] prompt: test that rendering is byte-stable across platforms
+396. [x] prompt: remove trailing whitespace in rendered output
+397. [x] prompt: normalize line endings to LF
+398. [x] prompt: test that rendering is byte-stable across platforms
 399. [ ] prompt: docs: how the safety line is inserted and why
 400. [ ] prompt: docs: list template placeholders
 401. [x] parse: strip `<thinking>` blocks (exists as `think|thinking`); add `<reasoning>` tag
 402. [ ] parse: handle JSON with trailing commas by reporting a precise error
 403. [ ] parse: handle single-quoted JSON-like output with an explicit error
 404. [ ] parse: accept the first valid object when several appear (document)
-405. [ ] parse: report the position of the failing character in JSON errors
+405. [x] parse: report the position of the failing character in JSON errors
 406. [x] parse: strip leading `Answer:` or `回答:` labels
-407. [ ] parse: strip trailing explanations after the closing brace
+407. [x] parse: strip trailing explanations after the closing brace
 408. [x] parse: handle full-width braces `｛｝` by mapping to ASCII before parsing
 409. [x] parse: handle full-width quotes `＂` in JSON
 410. [x] parse: limit input size to 200 kB before parsing
