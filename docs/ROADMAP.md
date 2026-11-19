@@ -127,17 +127,17 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 120. [x] normalize: map `株式会社` ↔ `(株)` ↔ `㈱` (already); add `合名会社` and `合資会社`
 121. [x] normalize: map `一般社団法人` and `(一社)` variants
 122. [x] normalize: map `一般財団法人` and `(一財)` variants
-123. [ ] normalize: map `特定非営利活動法人` and `(NPO)` variants
+123. [x] normalize: map `特定非営利活動法人` and `(NPO)` variants
 124. [ ] normalize: map `独立行政法人` variants
 125. [ ] normalize: map `有限責任` prefix variants
 126. [ ] normalize: strip `本店` and `支店` suffixes for name fields when `strip_branch` is on
 127. [ ] normalize: map `代表取締役` titles out of name fields
 128. [x] normalize: map kanji numerals `一二三` to digits in address blocks (`一丁目`→`1丁目`)
 129. [x] normalize: map `丁目` and `-` variants in address fields
-130. [ ] normalize: map `番地` and `番` variants
+130. [x] normalize: map `番地` and `番` variants
 131. [ ] normalize: map `号` and `号室` variants in address fields
 132. [x] normalize: map prefecture omission (`東京`→`東京都`) for address fields
-133. [ ] normalize: map `北海道` (no 府/県/都 suffix) correctly
+133. [x] normalize: map `北海道` (no 府/県/都 suffix) correctly
 134. [x] normalize: map `京都府` and `大阪府` variants `京都` and `大阪`
 135. [ ] normalize: map 政令指定都市 wards (`千代田区`) with and without city name
 136. [x] normalize: strip `〒` and postal code from address fields
@@ -147,7 +147,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 140. [ ] normalize: date: accept `元号` with `元年` in all eras
 141. [x] normalize: date: reject 平成 dates after 2019-04-30 with a clear error
 142. [x] normalize: date: reject 令和 year 0
-143. [ ] normalize: date: accept 西暦 forms with `年` and `/` mixed
+143. [x] normalize: date: accept 西暦 forms with `年` and `/` mixed
 144. [ ] normalize: date: accept two-digit years only with `allow_short_year` flag
 145. [x] normalize: date: reject impossible dates (2027-02-30)
 146. [x] normalize: date: handle leap years (2028-02-29 valid, 2027-02-29 invalid)
@@ -192,8 +192,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 185. [x] normalize: list fields: normalize each element then sort
 186. [x] normalize: list fields: drop empty elements
 187. [x] normalize: list fields: dedupe after normalization
-188. [ ] normalize: boolean fields: accept `はい`/`いいえ`, `有効`/`無効`, `true`/`false`
-189. [ ] normalize: boolean fields: map `有` and `無` for existence questions
+188. [x] normalize: boolean fields: accept `はい`/`いいえ`, `有効`/`無効`, `true`/`false`
+189. [x] normalize: boolean fields: map `有` and `無` for existence questions
 190. [ ] normalize: enum fields: accept Japanese labels and map to codes
 191. [ ] normalize: enum fields: fail on unknown labels with the list of valid ones
 192. [ ] normalize: text fields: collapse repeated punctuation (`。。` → `。`)
@@ -206,24 +206,24 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 199. [ ] normalize: document order of steps and why it matters
 200. [ ] normalize: add `explain(value)` that lists which rules changed the value
 201. [ ] normalize: fuzz-test idempotency with 1000 random Japanese strings
-202. [ ] normalize: fuzz-test that normalization never raises on arbitrary Unicode
+202. [x] normalize: fuzz-test that normalization never raises on arbitrary Unicode
 203. [ ] normalize: golden test file of 200 notation variants with expected outputs
 204. [ ] normalize: golden test for dates across era boundaries
 205. [ ] normalize: golden test for address variants
-206. [ ] normalize: golden test for corporate-name variants
+206. [x] normalize: golden test for corporate-name variants
 207. [ ] normalize: performance: compile all regexes once at import
 208. [ ] normalize: performance: avoid NFKC on pure-ASCII input
 209. [ ] normalize: performance: cache entity-suffix replacement table
 210. [ ] normalize: API: expose `normalize_field` with explicit kind argument
 211. [ ] normalize: API: remove implicit kind detection by field-name suffix
-212. [ ] normalize: docs: table of notation variants and the rule that covers each
-213. [ ] normalize: docs: explain what is deliberately NOT normalized (e.g. 0 vs O)
+212. [x] normalize: docs: table of notation variants and the rule that covers each
+213. [x] normalize: docs: explain what is deliberately NOT normalized (e.g. 0 vs O)
 214. [ ] normalize: examples file for scorer plugin authors
 215. [ ] normalize: add `kana_fold` and `strip_branch` to a documented options dataclass
 216. [ ] normalize: validate options dataclass combinations
 217. [ ] normalize: test that default options are conservative (no folding)
 218. [ ] normalize: changelog entry for every rule added
-219. [ ] normalize: rule priority table in docs
+219. [x] normalize: rule priority table in docs
 220. [ ] normalize: deprecate `normalize_text` whitespace removal for name fields (keep for compare)
 
 ## P3. Scoring (221–370)
