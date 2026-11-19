@@ -24,3 +24,7 @@ safety:
   auth_required: false
 gold_source: 適格請求書発行事業者公表システム Web-API (requires application ID), fetched at eval time; set registration_number per run
 tags: [corporate, tax]
+created: 2026-11-20
+updated: 2026-11-20
+review_status: draft
+source_documents: [https://www.invoice-kohyo.nta.go.jp/]

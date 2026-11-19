@@ -28,3 +28,7 @@ safety:
   auth_required: false
 gold_source: jGrants public API snapshot taken at the start of each eval run
 tags: [subsidy]
+created: 2026-11-20
+updated: 2026-11-20
+review_status: draft
+source_documents: [https://www.jgrants-portal.go.jp/]
