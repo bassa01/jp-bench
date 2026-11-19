@@ -10,7 +10,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 5. [x] schema: reject unknown top-level keys with a clear list
 6. [x] schema: reject unknown keys inside `safety`
 7. [x] schema: reject unknown keys inside `portal`
-8. [ ] schema: require `portal.url` host to end in `.go.jp` or `.or.jp` for official portals
+8. [x] schema: require `portal.url` host to end in `.go.jp` or `.or.jp` for official portals
 9. [x] schema: require `gold_source` to be non-empty
 10. [x] schema: require `title_ja` to contain at least one Japanese character
 11. [x] schema: require `instructions_ja` to contain at least one Japanese character
@@ -523,8 +523,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 510. [ ] runner: respect NO_COLOR environment variable
 511. [x] runner: retry transient adapter errors up to 2 times
 512. [x] runner: do not retry parse errors
-513. [ ] runner: back off exponentially with jitter (seeded in tests)
-514. [ ] runner: cap total retry time per task
+513. [x] runner: back off exponentially with jitter (seeded in tests)
+514. [x] runner: cap total retry time per task
 515. [x] runner: record retry count per task
 516. [x] runner: concurrency flag `--jobs N` (default 1)
 517. [x] runner: concurrency keeps result order stable
