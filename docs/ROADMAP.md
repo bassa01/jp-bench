@@ -926,19 +926,19 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 907. [ ] docs: README limitations section
 908. [ ] docs: README citation block
 909. [ ] docs: README English and Japanese sections
-910. [ ] docs: CHANGELOG following Keep a Changelog
-911. [ ] docs: CHANGELOG entries for every merged change since v0.1
-912. [ ] docs: architecture page (loader, normalize, scoring, runner, report)
-913. [ ] docs: how-to add a task
-914. [ ] docs: how-to add a normalization rule
-915. [ ] docs: how-to add a success type
-916. [ ] docs: how-to add a model adapter
-917. [ ] docs: how-to run a benchmark offline with replay
+910. [x] docs: CHANGELOG following Keep a Changelog
+911. [x] docs: CHANGELOG entries for every merged change since v0.1
+912. [x] docs: architecture page (loader, normalize, scoring, runner, report)
+913. [x] docs: how-to add a task
+914. [x] docs: how-to add a normalization rule
+915. [x] docs: how-to add a success type
+916. [x] docs: how-to add a model adapter
+917. [x] docs: how-to run a benchmark offline with replay
 918. [ ] docs: how-to submit to the leaderboard
-919. [ ] docs: FAQ on ethics and safety of browser agents
-920. [ ] docs: FAQ on why official sources are used for gold
-921. [ ] docs: FAQ on why fictional data is used in form tasks
-922. [ ] docs: FAQ on costs and budgets
+919. [x] docs: FAQ on ethics and safety of browser agents
+920. [x] docs: FAQ on why official sources are used for gold
+921. [x] docs: FAQ on why fictional data is used in form tasks
+922. [x] docs: FAQ on costs and budgets
 923. [ ] docs: security policy (SECURITY.md) with reporting path
 924. [ ] docs: code of conduct
 925. [x] docs: issue templates (bug, task proposal, scoring question)
