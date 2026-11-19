@@ -10,7 +10,7 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 from pathlib import Path
 
-from .prompt import render_prompt
+from .prompt import prompt_hash, render_prompt
 from .runner import EchoAdapter, ReplayAdapter, digest, run_one, write_results
 from .scoring import score_all, summarize, wilson_interval
 from .task import TaskError, load_tasks, parse_task
@@ -149,7 +149,12 @@ def cmd_prompt(args: argparse.Namespace) -> int:
     if args.task_id not in tasks:
         print(f"unknown task: {args.task_id}", file=sys.stderr)
         return 1
-    print(render_prompt(tasks[args.task_id], lang=args.lang))
+    task = tasks[args.task_id]
+    text = render_prompt(task, lang=args.lang)
+    if args.json:
+        print(json.dumps({"task_id": task.id, "lang": args.lang, "hash": prompt_hash(task, args.lang), "prompt": text}, ensure_ascii=False, indent=2))
+    else:
+        print(text)
     return 0
 
 
@@ -307,6 +312,7 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("prompt", help="render a task as an agent prompt")
     p.add_argument("task_id")
     p.add_argument("--lang", choices=["en", "ja"], default="en")
+    p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_prompt)
 
     dp = sub.add_parser("doctor", help="check Python, package, and task directory")

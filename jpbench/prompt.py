@@ -8,6 +8,7 @@ import json
 from .task import Task
 
 MAX_PROMPT_CHARS = 8000
+PROMPT_TEMPLATE_VERSION = "1"
 
 _SAFETY_LINE = (
     "SAFETY: Do NOT press the final submit / 送信 / 提出 button. "
@@ -19,6 +20,7 @@ def render_prompt(task: Task, lang: str = "en") -> str:
     instructions = task.instructions_en if lang == "en" else task.instructions_ja
     lines = [
         f"# JP-Bench task: {task.id}",
+        f"Template: jpbench-prompt/{PROMPT_TEMPLATE_VERSION}",
         f"Portal: {task.portal.name_ja} ({task.portal.url}), operated by {task.portal.operator}",
         "",
         instructions,
@@ -36,8 +38,9 @@ def render_prompt(task: Task, lang: str = "en") -> str:
         )
     else:
         keys = ", ".join(f'"{f}": ...' for f in task.success.fields)
-        lines.append(f"Answer with JSON only: {{{keys}}}")
-    return "\n".join(lines)
+        lines.append(f"Answer with JSON only (no text before or after the object): {{{keys}}}")
+    text = "\n".join(line.rstrip() for line in "\n".join(lines).split("\n"))
+    return text
 
 
 def prompt_hash(task: Task, lang: str = "en") -> str:
