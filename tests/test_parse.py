@@ -25,3 +25,8 @@ def test_refusal_detection():
     assert looks_like_refusal("申し訳ありませんが、できません")
     assert looks_like_refusal("I cannot submit that form.")
     assert not looks_like_refusal('{"name": "A"}')
+
+
+def test_non_object_json_rejected():
+    with pytest.raises(TypeError):
+        extract_json("```json\n[1, 2]\n```")
