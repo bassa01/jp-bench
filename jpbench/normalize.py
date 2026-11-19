@@ -50,11 +50,17 @@ def normalize_text(value: object) -> str:
     text = str(value)
     for short, full in _ENTITY_ABBREVIATIONS.items():
         text = text.replace(short, full)
-    text = unicodedata.normalize("NFKC", text)
-    text = _ZERO_WIDTH_RE.sub("", text)
-    text = text.replace("\u301c", "~").replace("\u223c", "~")
-    text = _DASH_RE.sub("-", text)
-    text = _SPACE_RE.sub("", text)
+    # Repeat to a fixed point: NFKC can create spaces (e.g. U+00AF) and removing spaces can
+    # expose new compositions, so one pass is not idempotent.
+    for _ in range(5):
+        before = text
+        text = unicodedata.normalize("NFKC", text)
+        text = _ZERO_WIDTH_RE.sub("", text)
+        text = text.replace("\u301c", "~").replace("\u223c", "~")
+        text = _DASH_RE.sub("-", text)
+        text = _SPACE_RE.sub("", text)
+        if text == before:
+            break
     return text
 
 
