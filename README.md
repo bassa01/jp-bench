@@ -41,6 +41,8 @@ Normalization handles NFKC width, entity suffixes, dash variants, whitespace, an
 
 Gold answers come from official sources at evaluation time (国税庁 Web-APIs, e-Gov 法令API, jGrants API), so the benchmark does not go stale as registrations and subsidy calls change. `gold_source` in each task says where.
 
+Contributing: see [CONTRIBUTING.md](CONTRIBUTING.md). Planned work: [docs/ROADMAP.md](docs/ROADMAP.md). Sources: [docs/NOTICE.md](docs/NOTICE.md). Terms: [docs/GLOSSARY.md](docs/GLOSSARY.md).
+
 ## Usage
 
 ```bash
