@@ -29,6 +29,7 @@ def cmd_list(args: argparse.Namespace) -> int:
         if (not args.category or t.category == args.category)
         and (not args.difficulty or t.difficulty == args.difficulty)
         and (not args.tag or args.tag in t.tags)
+        and (args.all or not t.deprecated)
     ]
     if args.json:
         rows = [
@@ -107,7 +108,17 @@ def cmd_validate(args: argparse.Namespace) -> int:
     except TaskError as exc:
         print(f"invalid: {exc}", file=sys.stderr)
         return 1
+    categories: dict[str, int] = {}
+    difficulties: dict[str, int] = {}
+    for t in tasks:
+        categories[t.category] = categories.get(t.category, 0) + 1
+        difficulties[t.difficulty] = difficulties.get(t.difficulty, 0) + 1
+    if args.json:
+        print(json.dumps({"ok": True, "tasks": len(tasks), "categories": categories, "difficulties": difficulties}, indent=2))
+        return 0
     print(f"ok: {len(tasks)} tasks")
+    print("categories: " + ", ".join(f"{k}={v}" for k, v in sorted(categories.items())))
+    print("difficulty: " + ", ".join(f"{k}={v}" for k, v in sorted(difficulties.items())))
     return 0
 
 
@@ -337,6 +348,7 @@ def main(argv: list[str] | None = None) -> int:
     lp.add_argument("--difficulty")
     lp.add_argument("--json", action="store_true")
     lp.add_argument("--tag")
+    lp.add_argument("--all", action="store_true", help="include deprecated tasks")
     lp.set_defaults(func=cmd_list)
 
     shp = sub.add_parser("show", help="show one task")
@@ -345,6 +357,7 @@ def main(argv: list[str] | None = None) -> int:
     shp.set_defaults(func=cmd_show)
     vp = sub.add_parser("validate", help="validate task files")
     vp.add_argument("--only", help="validate a single task file")
+    vp.add_argument("--json", action="store_true")
     vp.set_defaults(func=cmd_validate)
 
     p = sub.add_parser("prompt", help="render a task as an agent prompt")

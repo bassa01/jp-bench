@@ -17,8 +17,9 @@ _ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 _JA_RE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
 TAGS = {"corporate", "tax", "legal", "subsidy", "labor", "needs_login", "multi_page", "japanese_era", "full_width_input"}
 REVIEW_STATUSES = {"draft", "reviewed", "published"}
-OPTIONAL_KEYS = {"tags", "review_status", "created", "updated", "owner", "snapshot_date", "source_documents", "max_steps", "timeout_seconds", "allowed_domains", "auth_method"}
+OPTIONAL_KEYS = {"version", "deprecated", "replaced_by", "tags", "review_status", "created", "updated", "owner", "snapshot_date", "source_documents", "max_steps", "timeout_seconds", "allowed_domains", "auth_method"}
 AUTH_METHODS = {"none", "idpw", "gbizid"}
+SUPPORTED_VERSION = 1
 PERSONAL_PHONE_RE = re.compile(r"0[789]0-?\d{4}-?\d{4}")
 SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state", "boolean", "date_range", "enum", "multi_answer", "abstain"}
 
@@ -82,6 +83,9 @@ class Task:
     owner: str = ""
     snapshot_date: str = ""
     source_documents: tuple[str, ...] = ()
+    version: int = 1
+    deprecated: bool = False
+    replaced_by: str = ""
     max_steps: int = 0
     timeout_seconds: int = 0
     allowed_domains: tuple[str, ...] = ()
@@ -202,6 +206,11 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
         _require(bool(safety.get("auth_required", False)), task_id, "auth_method requires safety.auth_required: true")
     if bool(safety.get("auth_required", False)):
         _require(bool(auth_method), task_id, "auth_required tasks must declare auth_method")
+    version = int(raw.get("version", 1))
+    _require(1 <= version <= SUPPORTED_VERSION, task_id, f"version {version} is not supported (max {SUPPORTED_VERSION})")
+    deprecated = bool(raw.get("deprecated", False))
+    replaced_by = str(raw.get("replaced_by", ""))
+    _require(not deprecated or bool(replaced_by), task_id, "deprecated tasks must name replaced_by")
     created = _optional_date(raw, "created", task_id)
     updated = _optional_date(raw, "updated", task_id)
     _require(not (created and updated) or updated >= created, task_id, "updated must not be earlier than created")
@@ -234,6 +243,9 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
         owner=str(raw.get("owner", "")),
         snapshot_date=_optional_date(raw, "snapshot_date", task_id),
         source_documents=tuple(_optional_urls(raw, task_id)),
+        version=version,
+        deprecated=deprecated,
+        replaced_by=replaced_by,
         max_steps=int(raw.get("max_steps", 0)),
         timeout_seconds=int(raw.get("timeout_seconds", 0)),
         allowed_domains=tuple(allowed),
@@ -243,23 +255,48 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
 
 def load_tasks(directory: Path | str) -> list[Task]:
     directory = Path(directory)
+    root = directory.resolve()
     tasks: list[Task] = []
-    seen: set[str] = set()
+    seen: dict[str, str] = {}
+    titles_en: dict[str, str] = {}
+    titles_ja: dict[str, str] = {}
     for path in sorted(directory.glob("*.yaml")):
-        if path.name.startswith("_"):
+        if path.name.startswith(("_", ".")):
             continue
-        with path.open(encoding="utf-8") as fh:
-            try:
-                raw = yaml.safe_load(fh)
-            except yaml.YAMLError as exc:
-                mark = getattr(exc, "problem_mark", None)
-                where = f" at line {mark.line + 1}" if mark is not None else ""
-                raise TaskError(f"{path.name}: YAML parse error{where}") from exc
+        if path.is_symlink() and not path.resolve().is_relative_to(root):
+            raise TaskError(f"{path.name}: symlink points outside the task directory")
+        text = path.read_text(encoding="utf-8")
+        if text.startswith("\ufeff"):
+            raise TaskError(f"{path.name}: remove the UTF-8 byte order mark")
+        try:
+            raw = yaml.safe_load(text)
+        except yaml.YAMLError as exc:
+            mark = getattr(exc, "problem_mark", None)
+            where = f" at line {mark.line + 1}" if mark is not None else ""
+            raise TaskError(f"{path.name}: YAML parse error{where}") from exc
         if not isinstance(raw, dict):
             raise TaskError(f"{path.name}: top level must be a mapping")
         task = parse_task(raw, path)
         _require(task.id not in seen, task.id, "duplicate task id")
-        seen.add(task.id)
+        _require(task.title_en not in titles_en, task.id, f"title_en duplicates {titles_en.get(task.title_en)}")
+        _require(task.title_ja not in titles_ja, task.id, f"title_ja duplicates {titles_ja.get(task.title_ja)}")
+        seen[task.id] = path.name
+        titles_en[task.title_en] = task.id
+        titles_ja[task.title_ja] = task.id
         tasks.append(task)
+    _check_replacements(tasks)
     return tasks
 
+
+def _check_replacements(tasks: list[Task]) -> None:
+    by_id = {t.id: t for t in tasks}
+    for task in tasks:
+        if not task.replaced_by:
+            continue
+        _require(task.replaced_by in by_id, task.id, f"replaced_by {task.replaced_by!r} is not a known task")
+        seen = {task.id}
+        current = task.replaced_by
+        while current in by_id and by_id[current].replaced_by:
+            _require(current not in seen, task.id, "replaced_by forms a cycle")
+            seen.add(current)
+            current = by_id[current].replaced_by
