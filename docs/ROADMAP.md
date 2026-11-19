@@ -883,15 +883,15 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 864. [x] tests: zero-width and tilde normalization
 865. [x] tests: report, show, list filters
 866. [x] tests: prompt hash, length guard, parse, adapter, CSV
-867. [ ] tests: achieve 90% line coverage on jpbench
-868. [ ] tests: add coverage report to CI
-869. [ ] tests: fail CI when coverage drops below threshold
+867. [x] tests: achieve 90% line coverage on jpbench
+868. [x] tests: add coverage report to CI
+869. [x] tests: fail CI when coverage drops below threshold
 870. [ ] tests: mutation testing run on scoring (optional job)
-871. [ ] tests: property tests with hypothesis for normalize_number
-872. [ ] tests: property tests with hypothesis for normalize_date
-873. [ ] tests: property tests with hypothesis for normalize_text idempotency
-874. [ ] tests: property tests with hypothesis for set_overlap bounds
-875. [ ] tests: property tests with hypothesis for numeric_tolerance symmetry
+871. [x] tests: property tests with hypothesis for normalize_number
+872. [x] tests: property tests with hypothesis for normalize_date
+873. [x] tests: property tests with hypothesis for normalize_text idempotency
+874. [x] tests: property tests with hypothesis for set_overlap bounds
+875. [x] tests: property tests with hypothesis for numeric_tolerance symmetry
 876. [ ] tests: test that every normalize rule has at least one golden case
 877. [ ] tests: test that every success type has a sample passing answer
 878. [ ] tests: test that every success type has a sample failing answer
