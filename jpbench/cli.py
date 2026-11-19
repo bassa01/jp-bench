@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import sys
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 from pathlib import Path
 
 from .prompt import render_prompt
+from .runner import EchoAdapter, ReplayAdapter, digest, run_one, write_results
 from .scoring import score_all, summarize
 from .task import TaskError, load_tasks
 
@@ -164,6 +166,42 @@ def cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_run(args: argparse.Namespace) -> int:
+    tasks = _load(args.tasks)
+    golds = json.loads(Path(args.gold).read_text(encoding="utf-8"))
+    selected = [t for t in tasks if t.id in golds]
+    if args.seed is not None:
+        random.Random(args.seed).shuffle(selected)
+    if args.limit:
+        selected = selected[: args.limit]
+    if args.dry_run:
+        for t in selected:
+            print(f"{digest(render_prompt(t))} {t.id}")
+        return 0
+    if args.adapter == "echo":
+        adapter = EchoAdapter()
+    else:
+        if not args.replay:
+            print("--replay FILE is required for the replay adapter", file=sys.stderr)
+            return 1
+        adapter = ReplayAdapter.from_jsonl(args.replay)
+    records = []
+    for t in selected:
+        records.append(run_one(adapter, t, golds[t.id]))
+        if not args.quiet:
+            print(f"[{len(records)}/{len(selected)}] {t.id}", file=sys.stderr)
+    write_results(args.out, records)
+    for r in records:
+        mark = "PASS" if r.passed else "FAIL"
+        print(f"{mark} {r.task_id:32} {r.answer_kind:8} {r.score:.2f}  {r.detail}")
+    print(f"\n{sum(r.passed for r in records)}/{len(records)} passed -> {args.out}")
+    if any("SAFETY" in r.detail for r in records):
+        return 3
+    if any(r.answer_kind == "error" for r in records):
+        return 2
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="jpbench", description="JP-Bench: Japanese bureaucracy tasks for browser agents")
     parser.add_argument("--tasks", help="task directory (default: bundled tasks/)")
@@ -186,6 +224,17 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("task_id")
     p.add_argument("--lang", choices=["en", "ja"], default="en")
     p.set_defaults(func=cmd_prompt)
+
+    rn = sub.add_parser("run", help="run tasks through an adapter and write results")
+    rn.add_argument("--adapter", choices=["echo", "replay"], default="echo")
+    rn.add_argument("--replay")
+    rn.add_argument("--gold", required=True)
+    rn.add_argument("--out", required=True)
+    rn.add_argument("--limit", type=int)
+    rn.add_argument("--seed", type=int)
+    rn.add_argument("--dry-run", action="store_true")
+    rn.add_argument("--quiet", action="store_true")
+    rn.set_defaults(func=cmd_run)
 
     r = sub.add_parser("report", help="Markdown report from predictions and gold answers")
     r.add_argument("--pred", required=True)
