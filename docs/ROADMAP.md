@@ -6,10 +6,10 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 1. [x] task: skip files prefixed with underscore as templates
 2. [x] task: surface YAML parse errors with file name and line number
 3. [x] schema: require task ids to be lowercase kebab-case
-4. [ ] schema: require file name to equal task id (already enforced; add test for mismatch message)
+4. [x] schema: require file name to equal task id (already enforced; add test for mismatch message)
 5. [x] schema: reject unknown top-level keys with a clear list
-6. [ ] schema: reject unknown keys inside `safety`
-7. [ ] schema: reject unknown keys inside `portal`
+6. [x] schema: reject unknown keys inside `safety`
+7. [x] schema: reject unknown keys inside `portal`
 8. [ ] schema: require `portal.url` host to end in `.go.jp` or `.or.jp` for official portals
 9. [x] schema: require `gold_source` to be non-empty
 10. [x] schema: require `title_ja` to contain at least one Japanese character
@@ -22,10 +22,10 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 17. [x] schema: require `tolerance` only for `numeric_tolerance`
 18. [x] schema: require `state` only for `reached_state`
 19. [ ] schema: require `fields` to reference keys that exist in gold answers
-20. [ ] loader: expose `load_task_ids` without parsing bodies
+20. [x] loader: expose `load_task_ids` without parsing bodies
 21. [ ] loader: cache parsed tasks per directory for one run
 22. [ ] loader: report all validation errors instead of stopping at the first
-23. [ ] loader: support nested task directories (`tasks/<category>/`)
+23. [x] loader: support nested task directories (`tasks/<category>/`)
 24. [x] loader: ignore hidden files starting with `.`
 25. [x] loader: reject symlinks that point outside the task directory
 26. [x] loader: enforce UTF-8 and reject BOM-prefixed files with a message
@@ -40,15 +40,15 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 35. [x] schema: add `owner` field for the person responsible for gold answers
 36. [x] schema: add `review_status` (draft, reviewed, published)
 37. [ ] schema: only `published` tasks may appear in the leaderboard set
-38. [ ] schema: reject tasks with `review_status: published` but no `gold_source`
+38. [x] schema: reject tasks with `review_status: published` but no `gold_source`
 39. [ ] task model: add `Success.weights` for weighted field scoring
 40. [x] task model: add `Task.tags` as a sorted tuple
 41. [x] task model: add `Task.source_documents` list (URLs of official pages)
 42. [x] task model: add `Task.snapshot_date` (date the gold was fetched)
 43. [ ] task model: make `Task` hashable for use in sets
-44. [ ] task model: add `Task.to_dict` for JSON export
-45. [ ] task model: add `Task.from_dict` as the public constructor
-46. [ ] task model: provide `__repr__` that omits instructions
+44. [x] task model: add `Task.to_dict` for JSON export
+45. [x] task model: add `Task.from_dict` as the public constructor
+46. [x] task model: provide `__repr__` that omits instructions
 47. [x] loader: fail when two files declare the same `title_en`
 48. [ ] loader: warn when a task has no `title_ja`
 49. [ ] loader: count tasks per category on load (for `validate` output)
