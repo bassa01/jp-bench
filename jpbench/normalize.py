@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from urllib.parse import urlsplit, urlunsplit
 
 _ENTITY_ABBREVIATIONS = {
     "(株)": "株式会社",
@@ -70,7 +71,25 @@ def normalize_number(value: object) -> float:
     return float(text)
 
 
+def normalize_url(value: object) -> str:
+    """Lowercase scheme and host, drop fragment and trailing slash."""
+    parts = urlsplit(normalize_text(value))
+    path = parts.path.rstrip("/")
+    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), path, parts.query, ""))
+
+
+def normalize_article_ref(value: object) -> str:
+    """Canonical statute reference: 第3条の2, not 第３条之２ or 第3条 の 2."""
+    text = unicodedata.normalize("NFKC", str(value))
+    text = _SPACE_RE.sub("", text).replace("之", "の")
+    return text
+
+
 def normalize_field(name: str, value: object) -> str:
     if name.endswith("_date") or name == "date":
         return normalize_date(value)
+    if name.endswith("_url"):
+        return normalize_url(value)
+    if name.endswith("_article"):
+        return normalize_article_ref(value)
     return normalize_text(value)
