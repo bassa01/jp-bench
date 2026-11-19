@@ -813,11 +813,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 796. [ ] task content: tags: add `full_width_input` tag
 797. [x] task content: tags: validate tags against an allowed list
 798. [ ] task content: tags: list tasks by tag in README
-799. [ ] task content: budgets: set max_steps for every task
-800. [ ] task content: budgets: set timeout_seconds for every task
+799. [x] task content: budgets: set max_steps for every task
+800. [x] task content: budgets: set timeout_seconds for every task
 801. [ ] task content: budgets: review budgets after pilot runs
-802. [ ] task content: allowed_domains: set for every task
-803. [ ] task content: allowed_domains: test that each task's portal host is allowed
+802. [x] task content: allowed_domains: set for every task
+803. [x] task content: allowed_domains: test that each task's portal host is allowed
 804. [ ] task content: allowed_domains: list external domains that may appear in redirects
 805. [x] task content: review_status: mark each task draft, reviewed, or published
 806. [ ] task content: review_status: publish only reviewed tasks in v0.2
