@@ -27,3 +27,4 @@ safety:
   stop_before_submit: false
   auth_required: false
 gold_source: jGrants public API snapshot taken at the start of each eval run
+tags: [subsidy]

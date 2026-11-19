@@ -29,3 +29,4 @@ safety:
   stop_before_submit: true
   auth_required: true
 gold_source: inputs are the gold; scorer checks entered values and that submitted == false
+tags: [labor]

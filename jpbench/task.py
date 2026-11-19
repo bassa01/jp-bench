@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -13,6 +14,9 @@ CATEGORIES = {"lookup", "extract", "search", "form_fill", "download"}
 DIFFICULTIES = {"easy", "medium", "hard"}
 _ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 _JA_RE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
+TAGS = {"corporate", "tax", "legal", "subsidy", "labor", "needs_login", "multi_page", "japanese_era", "full_width_input"}
+REVIEW_STATUSES = {"draft", "reviewed", "published"}
+OPTIONAL_KEYS = {"tags", "review_status", "created", "updated", "owner", "snapshot_date", "source_documents"}
 SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state"}
 
 REQUIRED_KEYS = {
@@ -67,6 +71,13 @@ class Task:
     auth_required: bool
     gold_source: str
     path: Path | None = None
+    tags: tuple[str, ...] = ()
+    review_status: str = "draft"
+    created: str = ""
+    updated: str = ""
+    owner: str = ""
+    snapshot_date: str = ""
+    source_documents: tuple[str, ...] = ()
 
 
 def _require(cond: bool, task_id: str, msg: str) -> None:
@@ -74,10 +85,40 @@ def _require(cond: bool, task_id: str, msg: str) -> None:
         raise TaskError(f"[{task_id}] {msg}")
 
 
+def _optional_tags(raw: dict[str, Any], task_id: str) -> list[str]:
+    tags = list(raw.get("tags") or [])
+    for tag in tags:
+        _require(tag in TAGS, task_id, f"unknown tag {tag!r}")
+    _require(len(set(tags)) == len(tags), task_id, "tags must be unique")
+    return [str(t) for t in tags]
+
+
+def _optional_status(raw: dict[str, Any], task_id: str) -> str:
+    status = str(raw.get("review_status", "draft"))
+    _require(status in REVIEW_STATUSES, task_id, f"review_status must be one of {sorted(REVIEW_STATUSES)}")
+    return status
+
+
+def _optional_date(raw: dict[str, Any], key: str, task_id: str) -> str:
+    if key not in raw or raw[key] is None:
+        return ""
+    try:
+        return datetime.date.fromisoformat(str(raw[key])).isoformat()
+    except ValueError as exc:
+        raise TaskError(f"[{task_id}] {key} must be an ISO 8601 date") from exc
+
+
+def _optional_urls(raw: dict[str, Any], task_id: str) -> list[str]:
+    urls = list(raw.get("source_documents") or [])
+    for url in urls:
+        _require(str(url).startswith("https://"), task_id, "source_documents must be https URLs")
+    return [str(u) for u in urls]
+
+
 def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     task_id = str(raw.get("id", path.stem if path else "?"))
     _require(bool(_ID_RE.fullmatch(task_id)), task_id, "id must be lowercase kebab-case")
-    unknown = set(raw) - REQUIRED_KEYS
+    unknown = set(raw) - REQUIRED_KEYS - OPTIONAL_KEYS
     _require(not unknown, task_id, f"unknown keys: {sorted(unknown)}")
     missing = REQUIRED_KEYS - raw.keys()
     _require(not missing, task_id, f"missing keys: {sorted(missing)}")
@@ -120,6 +161,9 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     if raw["category"] == "form_fill":
         _require(stop, task_id, "form_fill tasks must set safety.stop_before_submit: true")
 
+    created = _optional_date(raw, "created", task_id)
+    updated = _optional_date(raw, "updated", task_id)
+    _require(not (created and updated) or updated >= created, task_id, "updated must not be earlier than created")
     return Task(
         id=task_id,
         title_ja=raw["title_ja"],
@@ -141,6 +185,13 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
         auth_required=bool(safety.get("auth_required", False)),
         gold_source=str(raw.get("gold_source", "")),
         path=path,
+        tags=tuple(sorted(_optional_tags(raw, task_id))),
+        review_status=_optional_status(raw, task_id),
+        created=created,
+        updated=updated,
+        owner=str(raw.get("owner", "")),
+        snapshot_date=_optional_date(raw, "snapshot_date", task_id),
+        source_documents=tuple(_optional_urls(raw, task_id)),
     )
 
 
@@ -165,3 +216,4 @@ def load_tasks(directory: Path | str) -> list[Task]:
         seen.add(task.id)
         tasks.append(task)
     return tasks
+

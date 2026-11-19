@@ -28,6 +28,7 @@ def cmd_list(args: argparse.Namespace) -> int:
         for t in _load(args.tasks)
         if (not args.category or t.category == args.category)
         and (not args.difficulty or t.difficulty == args.difficulty)
+        and (not args.tag or args.tag in t.tags)
     ]
     if args.json:
         rows = [
@@ -292,6 +293,7 @@ def main(argv: list[str] | None = None) -> int:
     lp.add_argument("--category")
     lp.add_argument("--difficulty")
     lp.add_argument("--json", action="store_true")
+    lp.add_argument("--tag")
     lp.set_defaults(func=cmd_list)
 
     shp = sub.add_parser("show", help="show one task")

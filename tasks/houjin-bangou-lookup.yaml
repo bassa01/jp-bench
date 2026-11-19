@@ -24,3 +24,4 @@ safety:
   stop_before_submit: false
   auth_required: false
 gold_source: 国税庁 法人番号システム Web-API (requires application ID), fetched at eval time
+tags: [corporate]
