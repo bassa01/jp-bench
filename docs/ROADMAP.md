@@ -492,9 +492,9 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 479. [x] runner: run_suite records the raw output for each task
 480. [x] runner: run_suite records parse error kind for each task
 481. [x] runner: run_suite continues after one task fails
-482. [ ] runner: run_suite stops early when `--fail-fast` is set
-483. [ ] runner: run_suite respects the task `timeout_seconds`
-484. [ ] runner: timeouts produce a TIMEOUT result, not an exception
+482. [x] runner: run_suite stops early when `--fail-fast` is set
+483. [x] runner: run_suite respects the task `timeout_seconds`
+484. [x] runner: timeouts produce a TIMEOUT result, not an exception
 485. [ ] runner: add `max_steps` to the adapter call metadata
 486. [ ] runner: add token counting hook (no provider lookup)
 487. [x] runner: add cost estimation hook using a price table file
@@ -505,13 +505,13 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 492. [ ] runner: add `--repeat K` to run each task K times
 493. [ ] runner: compute pass@1 and pass@K when repeat > 1
 494. [x] runner: write results as JSON Lines to `results/<run-id>.jsonl`
-495. [ ] runner: run id derived from timestamp and adapter name
-496. [ ] runner: write run metadata file alongside results
-497. [ ] runner: metadata includes jpbench version, prompt hashes, and adapter name
-498. [ ] runner: metadata includes Python version and platform
-499. [ ] runner: metadata never includes API keys (test with fake key in env)
-500. [ ] runner: resume an interrupted run from the last complete line
-501. [ ] runner: detect a half-written last line and drop it safely
+495. [x] runner: run id derived from timestamp and adapter name
+496. [x] runner: write run metadata file alongside results
+497. [x] runner: metadata includes jpbench version, prompt hashes, and adapter name
+498. [x] runner: metadata includes Python version and platform
+499. [x] runner: metadata never includes API keys (test with fake key in env)
+500. [x] runner: resume an interrupted run from the last complete line
+501. [x] runner: detect a half-written last line and drop it safely
 502. [ ] runner: lock the results file while writing (fcntl, POSIX only)
 503. [x] runner: write results atomically using a temp file and rename
 504. [x] runner: exit code 2 when some tasks errored
