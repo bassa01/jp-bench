@@ -103,3 +103,21 @@ def score_all(
             continue
         results.append(score_task(task, preds.get(task.id), golds[task.id]))
     return results
+
+
+def summarize(results: list[TaskResult], difficulty_by_id: dict[str, str]) -> dict[str, Any]:
+    """Pass counts and mean score overall and per difficulty."""
+    total = len(results)
+    passed = sum(r.passed for r in results)
+    by: dict[str, dict[str, int]] = {}
+    for r in results:
+        bucket = by.setdefault(difficulty_by_id.get(r.task_id, "unknown"), {"passed": 0, "total": 0})
+        bucket["total"] += 1
+        bucket["passed"] += int(r.passed)
+    return {
+        "total": total,
+        "passed": passed,
+        "pass_rate": passed / total if total else 0.0,
+        "mean_score": sum(r.score for r in results) / total if total else 0.0,
+        "by_difficulty": by,
+    }

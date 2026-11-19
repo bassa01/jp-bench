@@ -10,7 +10,7 @@ from importlib.metadata import version as _pkg_version
 from pathlib import Path
 
 from .prompt import render_prompt
-from .scoring import score_all
+from .scoring import score_all, summarize
 from .task import TaskError, load_tasks
 
 DEFAULT_TASKS = Path(__file__).resolve().parent.parent / "tasks"
@@ -69,6 +69,32 @@ def _version() -> str:
         return "0.0.0+unknown"
 
 
+def cmd_report(args: argparse.Namespace) -> int:
+    tasks = _load(args.tasks)
+    preds = json.loads(Path(args.pred).read_text(encoding="utf-8"))
+    golds = json.loads(Path(args.gold).read_text(encoding="utf-8"))
+    results = score_all(tasks, preds, golds)
+    if not results:
+        print("no tasks with gold answers", file=sys.stderr)
+        return 1
+    summary = summarize(results, {t.id: t.difficulty for t in tasks})
+    lines = ["# JP-Bench report", "", "| task | result | score | detail |", "|---|---|---|---|"]
+    for r in results:
+        lines.append(f"| {r.task_id} | {'PASS' if r.passed else 'FAIL'} | {r.score:.2f} | {r.detail} |")
+    lines += [
+        "",
+        f"Passed {summary['passed']}/{summary['total']} ({summary['pass_rate']:.1%}), "
+        f"mean score {summary['mean_score']:.3f}",
+        "",
+        "| difficulty | passed | total |",
+        "|---|---|---|",
+    ]
+    for diff, counts in sorted(summary["by_difficulty"].items()):
+        lines.append(f"| {diff} | {counts['passed']} | {counts['total']} |")
+    print("\n".join(lines))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="jpbench", description="JP-Bench: Japanese bureaucracy tasks for browser agents")
     parser.add_argument("--tasks", help="task directory (default: bundled tasks/)")
@@ -82,6 +108,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("task_id")
     p.add_argument("--lang", choices=["en", "ja"], default="en")
     p.set_defaults(func=cmd_prompt)
+
+    r = sub.add_parser("report", help="Markdown report from predictions and gold answers")
+    r.add_argument("--pred", required=True)
+    r.add_argument("--gold", required=True)
+    r.set_defaults(func=cmd_report)
 
     s = sub.add_parser("score", help="score predictions against gold answers")
     s.add_argument("--pred", required=True)
