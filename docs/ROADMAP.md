@@ -115,18 +115,18 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 108. [ ] normalize: map ideographic full stop `。` and `．` to one form for comparison
 109. [ ] normalize: map `・` (middle dot) variants `･` and `·`
 110. [ ] normalize: map `ヶ` and `ケ` only when option `kana_fold` is on
-111. [ ] normalize: optional hiragana/katakana folding for comparison (`kana_fold`)
-112. [ ] normalize: map small kana (ぁぃぅぇぉ) to large forms when `kana_fold` is on
-113. [ ] normalize: fold `ゐ`/`ゑ` to `い`/`え` when `kana_fold` is on
-114. [ ] normalize: unify `〒` postal mark removal for address fields
-115. [ ] normalize: strip postal code hyphen for `postal_code` fields
-116. [ ] normalize: format `postal_code` as `NNN-NNNN`
-117. [ ] normalize: parse `＋81` and `+81` phone prefixes to `+81`
-118. [ ] normalize: strip phone separators (`-`, `(`, `)`, spaces) for `phone` fields
-119. [ ] normalize: validate phone digit count (10 or 11 domestic)
-120. [ ] normalize: map `株式会社` ↔ `(株)` ↔ `㈱` (already); add `合名会社` and `合資会社`
-121. [ ] normalize: map `一般社団法人` and `(一社)` variants
-122. [ ] normalize: map `一般財団法人` and `(一財)` variants
+111. [x] normalize: optional hiragana/katakana folding for comparison (`kana_fold`)
+112. [x] normalize: map small kana (ぁぃぅぇぉ) to large forms when `kana_fold` is on
+113. [x] normalize: fold `ゐ`/`ゑ` to `い`/`え` when `kana_fold` is on
+114. [x] normalize: unify `〒` postal mark removal for address fields
+115. [x] normalize: strip postal code hyphen for `postal_code` fields
+116. [x] normalize: format `postal_code` as `NNN-NNNN`
+117. [x] normalize: parse `＋81` and `+81` phone prefixes to `+81`
+118. [x] normalize: strip phone separators (`-`, `(`, `)`, spaces) for `phone` fields
+119. [x] normalize: validate phone digit count (10 or 11 domestic)
+120. [x] normalize: map `株式会社` ↔ `(株)` ↔ `㈱` (already); add `合名会社` and `合資会社`
+121. [x] normalize: map `一般社団法人` and `(一社)` variants
+122. [x] normalize: map `一般財団法人` and `(一財)` variants
 123. [ ] normalize: map `特定非営利活動法人` and `(NPO)` variants
 124. [ ] normalize: map `独立行政法人` variants
 125. [ ] normalize: map `有限責任` prefix variants
@@ -141,16 +141,16 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 134. [ ] normalize: map `京都府` and `大阪府` variants `京都` and `大阪`
 135. [ ] normalize: map 政令指定都市 wards (`千代田区`) with and without city name
 136. [ ] normalize: strip `〒` and postal code from address fields
-137. [ ] normalize: date: accept `R9.4.1` abbreviation for 令和
-138. [ ] normalize: date: accept `H31.4.30` abbreviation for 平成
-139. [ ] normalize: date: accept `S64.1.7` abbreviation for 昭和
+137. [x] normalize: date: accept `R9.4.1` abbreviation for 令和
+138. [x] normalize: date: accept `H31.4.30` abbreviation for 平成
+139. [x] normalize: date: accept `S64.1.7` abbreviation for 昭和
 140. [ ] normalize: date: accept `元号` with `元年` in all eras
-141. [ ] normalize: date: reject 平成 dates after 2019-04-30 with a clear error
-142. [ ] normalize: date: reject 令和 year 0
+141. [x] normalize: date: reject 平成 dates after 2019-04-30 with a clear error
+142. [x] normalize: date: reject 令和 year 0
 143. [ ] normalize: date: accept 西暦 forms with `年` and `/` mixed
 144. [ ] normalize: date: accept two-digit years only with `allow_short_year` flag
-145. [ ] normalize: date: reject impossible dates (2027-02-30)
-146. [ ] normalize: date: handle leap years (2028-02-29 valid, 2027-02-29 invalid)
+145. [x] normalize: date: reject impossible dates (2027-02-30)
+146. [x] normalize: date: handle leap years (2028-02-29 valid, 2027-02-29 invalid)
 147. [ ] normalize: date: accept `YYYY年MM月DD日` with leading zeros
 148. [ ] normalize: date: accept `YYYY年M月D日` without leading zeros
 149. [ ] normalize: date: normalize time-of-day suffix (`午前`/`午後`) out of date fields
