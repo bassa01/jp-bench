@@ -409,31 +409,31 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 398. [ ] prompt: test that rendering is byte-stable across platforms
 399. [ ] prompt: docs: how the safety line is inserted and why
 400. [ ] prompt: docs: list template placeholders
-401. [ ] parse: strip `<thinking>` blocks (exists as `think|thinking`); add `<reasoning>` tag
+401. [x] parse: strip `<thinking>` blocks (exists as `think|thinking`); add `<reasoning>` tag
 402. [ ] parse: handle JSON with trailing commas by reporting a precise error
 403. [ ] parse: handle single-quoted JSON-like output with an explicit error
 404. [ ] parse: accept the first valid object when several appear (document)
 405. [ ] parse: report the position of the failing character in JSON errors
-406. [ ] parse: strip leading `Answer:` or `回答:` labels
+406. [x] parse: strip leading `Answer:` or `回答:` labels
 407. [ ] parse: strip trailing explanations after the closing brace
-408. [ ] parse: handle full-width braces `｛｝` by mapping to ASCII before parsing
-409. [ ] parse: handle full-width quotes `＂` in JSON
-410. [ ] parse: limit input size to 200 kB before parsing
-411. [ ] parse: reject NaN and Infinity in JSON
-412. [ ] parse: reject duplicate keys in the top-level object
-413. [ ] parse: keep the raw output in an error object for debugging
-414. [ ] parse: add `ParseError` class with `raw` attribute
-415. [ ] parse: refusal patterns: add Japanese phrases for "cannot access the page"
-416. [ ] parse: refusal patterns: add English phrases for "I don't have access"
-417. [ ] parse: refusal detection returns the matched phrase
-418. [ ] parse: refusal detection is case-insensitive for English patterns
+408. [x] parse: handle full-width braces `｛｝` by mapping to ASCII before parsing
+409. [x] parse: handle full-width quotes `＂` in JSON
+410. [x] parse: limit input size to 200 kB before parsing
+411. [x] parse: reject NaN and Infinity in JSON
+412. [x] parse: reject duplicate keys in the top-level object
+413. [x] parse: keep the raw output in an error object for debugging
+414. [x] parse: add `ParseError` class with `raw` attribute
+415. [x] parse: refusal patterns: add Japanese phrases for "cannot access the page"
+416. [x] parse: refusal patterns: add English phrases for "I don't have access"
+417. [x] parse: refusal detection returns the matched phrase
+418. [x] parse: refusal detection is case-insensitive for English patterns
 419. [ ] parse: refusal detection ignores quoted text in the answer
-420. [ ] parse: add `answer_kind` (json, refusal, empty, invalid) classification
+420. [x] parse: add `answer_kind` (json, refusal, empty, invalid) classification
 421. [ ] parse: count each answer kind per run for the report
-422. [ ] parse: tests for each answer kind
-423. [ ] parse: tests for full-width braces
-424. [ ] parse: tests for oversize input
-425. [ ] parse: tests for duplicate keys
+422. [x] parse: tests for each answer kind
+423. [x] parse: tests for full-width braces
+424. [x] parse: tests for oversize input
+425. [x] parse: tests for duplicate keys
 426. [ ] parse: fuzz test that extract_json never raises anything but ParseError
 427. [ ] parse: fuzz test with random bracket sequences
 428. [ ] parse: performance test on 1 MB output
