@@ -620,17 +620,17 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 605. [x] cli: add `report --format csv`
 606. [x] cli: add `list --json` output
 607. [x] cli: add `list --tag <tag>` filter (depends on task tags, item 40)
-608. [ ] cli: add `list --sort id|difficulty|category`
+608. [x] cli: add `list --sort id|difficulty|category`
 609. [ ] cli: add `list --columns` to choose output columns
 610. [x] cli: add `show --json`
-611. [ ] cli: add `show --prompt` shortcut that renders the English prompt
-612. [ ] cli: add `show --gold-source` to print the gold source line
+611. [x] cli: add `show --prompt` shortcut that renders the English prompt
+612. [x] cli: add `show --gold-source` to print the gold source line
 613. [ ] cli: add `validate --fix-hints` to print suggested fixes
 614. [x] cli: add `validate --only <file>` for a single task file
 615. [x] cli: add `doctor` command checking Python, package, and task directory
 616. [ ] cli: add `doctor` check that pytest is installed for contributors
-617. [ ] cli: add `doctor` check that ruff is installed (optional)
-618. [ ] cli: add `doctor` check that the task directory is writable for results
+617. [x] cli: add `doctor` check that ruff is installed (optional)
+618. [x] cli: add `doctor` check that the task directory is writable for results
 619. [ ] cli: add `config` command that prints effective settings
 620. [ ] cli: config reads `jpbench.toml` from the current directory
 621. [ ] cli: config validates keys in `jpbench.toml`
@@ -638,13 +638,13 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 623. [ ] cli: environment variable overrides for config values
 624. [ ] cli: `--no-color` flag
 625. [ ] cli: `--log-level` flag with debug, info, warning, error
-626. [ ] cli: log to stderr, output to stdout (audit all commands)
-627. [ ] cli: exit code table in `--help` epilog
-628. [ ] cli: exit code 0 on success, 1 on user error, 2 on partial failure
+626. [x] cli: log to stderr, output to stdout (audit all commands)
+627. [x] cli: exit code table in `--help` epilog
+628. [x] cli: exit code 0 on success, 1 on user error, 2 on partial failure
 629. [ ] cli: friendly error for unknown subcommand with suggestion
 630. [ ] cli: friendly error for missing file arguments
-631. [ ] cli: friendly error for unreadable JSON with line number
-632. [ ] cli: `score` reports file path in error messages
+631. [x] cli: friendly error for unreadable JSON with line number
+632. [x] cli: `score` reports file path in error messages
 633. [x] cli: shell completion script for bash (`jpbench completion bash`)
 634. [x] cli: shell completion script for zsh
 635. [ ] cli: shell completion script for fish
@@ -654,11 +654,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 639. [ ] cli: keep argparse help text in sync with docs (test)
 640. [x] cli: test every subcommand's `--help` exits 0
 641. [ ] cli: test that unknown global option fails with exit code 1
-642. [ ] cli: test `show` output format is stable (golden)
-643. [ ] cli: test `list` output format is stable (golden)
+642. [x] cli: test `show` output format is stable (golden)
+643. [x] cli: test `list` output format is stable (golden)
 644. [x] cli: test `report` Markdown output format is stable (golden)
 645. [x] cli: test `report` CSV has the documented header
-646. [ ] cli: test `score` against a fixed fixture set
+646. [x] cli: test `score` against a fixed fixture set
 647. [x] report: add per-category table to Markdown report
 648. [x] report: add per-success-type table to Markdown report
 649. [x] report: add safety section listing any violations
