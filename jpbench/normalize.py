@@ -99,6 +99,7 @@ def normalize_date(value: object) -> str:
 def normalize_number(value: object) -> float:
     """Parse numbers with commas, full-width digits, 円/¥ and 万/億 scales; 無料 is 0."""
     text = unicodedata.normalize("NFKC", str(value)).strip()
+    text = re.sub(r"約|およそ", "", text)
     if text == "無料":
         return 0.0
     scale = 1.0
@@ -132,7 +133,67 @@ def normalize_url(value: object) -> str:
 def normalize_article_ref(value: object) -> str:
     """Canonical statute reference: 第3条の2, not 第３条之２ or 第3条 の 2."""
     text = unicodedata.normalize("NFKC", str(value))
-    return _SPACE_RE.sub("", text).replace("之", "の")
+    text = _SPACE_RE.sub("", text).replace("之", "の")
+    text = _kanji_numerals_to_digits(text, "条")
+    text = re.sub(r"の([〇一二三四五六七八九十]+)", lambda m: "の" + _kanji_or_same(m.group(1)), text)
+    return re.sub(r"^(\d+)条", r"第\1条", text)
+
+
+_KANJI_DIGITS = {"〇": 0, "一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+
+
+def _kanji_to_int(text: str) -> int:
+    """Convert kanji numerals up to 99, such as 三十五 to 35."""
+    total = 0
+    current = 0
+    for ch in text:
+        if ch == "十":
+            total += (current or 1) * 10
+            current = 0
+        elif ch in _KANJI_DIGITS:
+            current = _KANJI_DIGITS[ch]
+        else:
+            raise ValueError(f"unsupported numeral {ch!r}")
+    return total + current
+
+
+def _kanji_or_same(text: str) -> str:
+    try:
+        return str(_kanji_to_int(text))
+    except ValueError:
+        return text
+
+
+def _kanji_numerals_to_digits(text: str, suffix: str) -> str:
+    """Replace kanji numerals before a suffix (条, 号, 丁目) with digits; leave unsupported forms alone."""
+
+    def repl(match: re.Match[str]) -> str:
+        try:
+            return f"{_kanji_to_int(match.group(1))}{suffix}"
+        except ValueError:
+            return match.group(0)
+
+    return re.sub(rf"([〇一二三四五六七八九十]+){suffix}", repl, text)
+
+
+def normalize_law_number(value: object) -> str:
+    """令和元年法律第一号 becomes 令和1年法律第1号."""
+    text = _SPACE_RE.sub("", unicodedata.normalize("NFKC", str(value)))
+    text = text.replace("元年", "1年")
+    return _kanji_numerals_to_digits(text, "号")
+
+
+_PREFECTURE_SHORT_FORMS = (("東京", "東京都"), ("大阪", "大阪府"), ("京都", "京都府"))
+
+
+def normalize_address(value: object) -> str:
+    """Strip the postal mark and code, use digits for 丁目, and add 都/府 to bare Tokyo, Osaka, Kyoto."""
+    text = unicodedata.normalize("NFKC", str(value)).strip()
+    text = re.sub(r"^〒?\s*\d{3}-?\d{4}\s*", "", text)
+    text = _kanji_numerals_to_digits(text, "丁目")
+    for short, full in _PREFECTURE_SHORT_FORMS:
+        text = re.sub(rf"^{short}(?![都道府県市区町村郡])", full, text, count=1)
+    return text
 
 
 def normalize_corporate_number(value: object) -> str:
@@ -188,6 +249,10 @@ def normalize_field(name: str, value: object) -> str:
         return normalize_url(value)
     if name.endswith("_article"):
         return normalize_article_ref(value)
+    if name.endswith("law_number"):
+        return normalize_law_number(value)
+    if name.endswith("address"):
+        return normalize_address(value)
     if name.endswith("corporate_number"):
         return normalize_corporate_number(value)
     if name.endswith("invoice_number"):
