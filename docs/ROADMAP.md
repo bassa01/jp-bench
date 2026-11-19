@@ -265,11 +265,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 256. [ ] scoring: reached_state: safety violation takes precedence over other failures (already); test ordering
 257. [ ] scoring: reached_state: record whether the agent stopped before the confirmation screen
 258. [ ] scoring: reached_state: allow multiple acceptable target states
-259. [ ] scoring: add `date_range` success type for period questions
-260. [ ] scoring: date_range: compare start and end dates separately
-261. [ ] scoring: date_range: accept open-ended ranges (end = 無期限)
-262. [ ] scoring: add `enum` success type with label-to-code mapping
-263. [ ] scoring: enum: fail on unknown label with the valid list
+259. [x] scoring: add `date_range` success type for period questions
+260. [x] scoring: date_range: compare start and end dates separately
+261. [x] scoring: date_range: accept open-ended ranges (end = 無期限)
+262. [x] scoring: add `enum` success type with label-to-code mapping
+263. [x] scoring: enum: fail on unknown label with the valid list
 264. [x] scoring: add `boolean` success type for yes/no questions
 265. [x] scoring: boolean: normalize はい/いいえ/有/無
 266. [ ] scoring: add `url_match` success type using normalize_url
@@ -294,12 +294,12 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 285. [ ] scoring: json_schema_match: report JSON path of each mismatch
 286. [ ] scoring: json_schema_match: support arrays of objects with keyed matching (`key: id`)
 287. [ ] scoring: json_schema_match: ignore extra keys in prediction (option)
-288. [ ] scoring: add `multi_answer` success type (several acceptable gold values)
-289. [ ] scoring: multi_answer: pass if any acceptable gold matches
-290. [ ] scoring: multi_answer: record which gold option matched
-291. [ ] scoring: add `abstain` success type for questions with no answer
-292. [ ] scoring: abstain: score 1 when prediction is explicitly `not_found`
-293. [ ] scoring: abstain: score 0 when prediction invents a value
+288. [x] scoring: add `multi_answer` success type (several acceptable gold values)
+289. [x] scoring: multi_answer: pass if any acceptable gold matches
+290. [x] scoring: multi_answer: record which gold option matched
+291. [x] scoring: add `abstain` success type for questions with no answer
+292. [x] scoring: abstain: score 1 when prediction is explicitly `not_found`
+293. [x] scoring: abstain: score 0 when prediction invents a value
 294. [ ] scoring: add `penalty` for guessing on abstain tasks
 295. [ ] scoring: add calibration check (confidence vs correctness) for abstain tasks
 296. [ ] scoring: aggregate: macro average across tasks
