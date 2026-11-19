@@ -29,6 +29,7 @@ _ERA_OFFSETS = {
 }
 
 _SPACE_RE = re.compile(r"\s+")
+_ZERO_WIDTH_RE = re.compile(r"[\u200b\u200c\u200d\u2060\ufeff]")
 _DASH_RE = re.compile(r"[‐‑‒–—―ー−－]")
 _ERA_DATE_RE = re.compile(r"(令和|平成|昭和)(元|\d+)年(\d+)月(\d+)日")
 _WESTERN_DATE_RE = re.compile(r"(\d{4})[年/.\-](\d{1,2})[月/.\-](\d{1,2})日?")
@@ -40,6 +41,7 @@ def normalize_text(value: object) -> str:
     for short, full in _ENTITY_ABBREVIATIONS.items():
         text = text.replace(short, full)
     text = unicodedata.normalize("NFKC", text)
+    text = _ZERO_WIDTH_RE.sub("", text)
     text = _DASH_RE.sub("-", text)
     text = _SPACE_RE.sub("", text)
     return text
