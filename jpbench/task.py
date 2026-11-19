@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,7 @@ import yaml
 
 CATEGORIES = {"lookup", "extract", "search", "form_fill", "download"}
 DIFFICULTIES = {"easy", "medium", "hard"}
+_ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state"}
 
 REQUIRED_KEYS = {
@@ -72,6 +74,7 @@ def _require(cond: bool, task_id: str, msg: str) -> None:
 
 def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     task_id = str(raw.get("id", path.stem if path else "?"))
+    _require(bool(_ID_RE.fullmatch(task_id)), task_id, "id must be lowercase kebab-case")
     missing = REQUIRED_KEYS - raw.keys()
     _require(not missing, task_id, f"missing keys: {sorted(missing)}")
 

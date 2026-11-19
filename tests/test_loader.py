@@ -24,3 +24,18 @@ def test_non_mapping_file_rejected(tmp_path):
     (tmp_path / "list.yaml").write_text("- a\n- b\n", encoding="utf-8")
     with pytest.raises(TaskError, match="top level must be a mapping"):
         load_tasks(tmp_path)
+
+
+def test_id_must_be_kebab_case():
+    from jpbench.task import parse_task
+
+    raw = {
+        "id": "Bad_ID", "title_ja": "x", "title_en": "x",
+        "portal": {"name_ja": "x", "url": "https://example.go.jp/", "operator": "x"},
+        "category": "lookup", "difficulty": "easy",
+        "instructions_ja": "x", "instructions_en": "x", "inputs": {},
+        "success": {"type": "reached_state", "state": "done"},
+        "safety": {"stop_before_submit": False},
+    }
+    with pytest.raises(TaskError, match="kebab-case"):
+        parse_task(raw)
