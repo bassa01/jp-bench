@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import concurrent.futures
+import datetime
 import hashlib
+import importlib.metadata
 import json
 import os
+import platform
+import sys
 import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -92,16 +97,37 @@ class RunRecord:
     attempts: int = 1
 
 
-def run_one(adapter: Any, task: Task, gold: dict[str, Any], lang: str = "en", retries: int = 2) -> RunRecord:
-    """Run one task. Adapter exceptions are retried; parse failures are not."""
+def _complete(adapter: Any, prompt: str, timeout: float | None) -> str:
+    if timeout is None:
+        return adapter.complete(prompt)
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    try:
+        return pool.submit(adapter.complete, prompt).result(timeout=timeout)
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
+
+
+def run_one(
+    adapter: Any,
+    task: Task,
+    gold: dict[str, Any],
+    lang: str = "en",
+    retries: int = 2,
+    timeout: float | None = None,
+) -> RunRecord:
+    """Run one task. Adapter exceptions are retried; timeouts and parse failures are not."""
     prompt = render_prompt(task, lang=lang)
     h = digest(prompt)
     error = ""
     attempts = 0
     for attempts in range(1, retries + 2):
         try:
-            raw = adapter.complete(prompt)
+            raw = _complete(adapter, prompt, timeout)
             break
+        except concurrent.futures.TimeoutError as exc:
+            if timeout is not None:
+                return RunRecord(task.id, h, "timeout", False, 0.0, "adapter timed out", "", f"timed out after {timeout}s", attempts)
+            error = f"{type(exc).__name__}: {exc}"
         except Exception as exc:  # noqa: BLE001 - adapter failures are recorded, never fatal to the run
             error = f"{type(exc).__name__}: {exc}"
     else:
@@ -114,8 +140,75 @@ def run_one(adapter: Any, task: Task, gold: dict[str, Any], lang: str = "en", re
     return RunRecord(task.id, h, "json", result.passed, result.score, result.detail, raw, "", attempts)
 
 
-def run_suite(adapter: Any, tasks: list[Task], golds: dict[str, dict[str, Any]], lang: str = "en") -> list[RunRecord]:
-    return [run_one(adapter, t, golds[t.id], lang=lang) for t in tasks if t.id in golds]
+def run_suite(
+    adapter: Any,
+    tasks: list[Task],
+    golds: dict[str, dict[str, Any]],
+    lang: str = "en",
+    fail_fast: bool = False,
+    skip: set[str] | frozenset[str] = frozenset(),
+    timeout: float | None = None,
+) -> list[RunRecord]:
+    records: list[RunRecord] = []
+    for task in tasks:
+        if task.id not in golds or task.id in skip:
+            continue
+        rec = run_one(adapter, task, golds[task.id], lang=lang, timeout=timeout)
+        records.append(rec)
+        if fail_fast and rec.answer_kind == "error":
+            break
+    return records
+
+
+def pass_at_k(results: dict[str, list[bool]], k: int) -> float:
+    """Fraction of tasks with at least one pass in the first k attempts."""
+    if not results:
+        return 0.0
+    return sum(any(flags[:k]) for flags in results.values()) / len(results)
+
+
+def load_records(path: Path | str) -> list[dict[str, Any]]:
+    """Read JSON Lines results, dropping a half-written last line instead of failing."""
+    p = Path(path)
+    if not p.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in p.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return rows
+
+
+def make_run_id(adapter_name: str, when: datetime.datetime | None = None) -> str:
+    when = when or datetime.datetime.now(datetime.timezone.utc)
+    return f"{when:%Y%m%dT%H%M%SZ}-{adapter_name}"
+
+
+def _version() -> str:
+    try:
+        return importlib.metadata.version("jpbench")
+    except importlib.metadata.PackageNotFoundError:
+        return "0.0.0+unknown"
+
+
+def write_metadata(results_path: Path | str, adapter_name: str, records: list[RunRecord], run_id: str) -> Path:
+    """Metadata next to the results. Deliberately records no environment variables, so no keys."""
+    meta = {
+        "run_id": run_id,
+        "adapter": adapter_name,
+        "jpbench_version": _version(),
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+        "count": len(records),
+        "prompt_hashes": sorted({r.prompt_hash for r in records}),
+    }
+    path = Path(f"{results_path}.meta.json")
+    path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
 
 
 def write_results(path: Path | str, records: list[RunRecord]) -> None:
