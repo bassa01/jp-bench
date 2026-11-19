@@ -626,8 +626,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 611. [ ] cli: add `show --prompt` shortcut that renders the English prompt
 612. [ ] cli: add `show --gold-source` to print the gold source line
 613. [ ] cli: add `validate --fix-hints` to print suggested fixes
-614. [ ] cli: add `validate --only <file>` for a single task file
-615. [ ] cli: add `doctor` command checking Python, package, and task directory
+614. [x] cli: add `validate --only <file>` for a single task file
+615. [x] cli: add `doctor` command checking Python, package, and task directory
 616. [ ] cli: add `doctor` check that pytest is installed for contributors
 617. [ ] cli: add `doctor` check that ruff is installed (optional)
 618. [ ] cli: add `doctor` check that the task directory is writable for results
@@ -645,31 +645,31 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 630. [ ] cli: friendly error for missing file arguments
 631. [ ] cli: friendly error for unreadable JSON with line number
 632. [ ] cli: `score` reports file path in error messages
-633. [ ] cli: shell completion script for bash (`jpbench completion bash`)
-634. [ ] cli: shell completion script for zsh
+633. [x] cli: shell completion script for bash (`jpbench completion bash`)
+634. [x] cli: shell completion script for zsh
 635. [ ] cli: shell completion script for fish
 636. [ ] cli: man page generated from argparse help
-637. [ ] cli: `--help` lists examples for each subcommand
+637. [x] cli: `--help` lists examples for each subcommand
 638. [ ] cli: `jpbench help <topic>` for scoring and safety topics
 639. [ ] cli: keep argparse help text in sync with docs (test)
-640. [ ] cli: test every subcommand's `--help` exits 0
+640. [x] cli: test every subcommand's `--help` exits 0
 641. [ ] cli: test that unknown global option fails with exit code 1
 642. [ ] cli: test `show` output format is stable (golden)
 643. [ ] cli: test `list` output format is stable (golden)
-644. [ ] cli: test `report` Markdown output format is stable (golden)
-645. [ ] cli: test `report` CSV has the documented header
+644. [x] cli: test `report` Markdown output format is stable (golden)
+645. [x] cli: test `report` CSV has the documented header
 646. [ ] cli: test `score` against a fixed fixture set
-647. [ ] report: add per-category table to Markdown report
-648. [ ] report: add per-success-type table to Markdown report
-649. [ ] report: add safety section listing any violations
+647. [x] report: add per-category table to Markdown report
+648. [x] report: add per-success-type table to Markdown report
+649. [x] report: add safety section listing any violations
 650. [ ] report: add abstain section listing not_found answers
 651. [ ] report: add parse error section listing raw output lengths (not contents)
 652. [ ] report: add run metadata section (prompt hashes, version)
-653. [ ] report: add confidence interval for pass rate
+653. [x] report: add confidence interval for pass rate
 654. [ ] report: add bar chart as ASCII in terminal output
 655. [ ] report: add `--title` flag for the report heading
-656. [ ] report: add `--output` flag to write the report to a file
-657. [ ] report: refuse to overwrite an existing report without `--force`
+656. [x] report: add `--output` flag to write the report to a file
+657. [x] report: refuse to overwrite an existing report without `--force`
 658. [ ] report: HTML output format with the same content
 659. [ ] report: HTML output escapes all values
 660. [ ] report: HTML output has no external scripts or fonts
