@@ -12,6 +12,7 @@ import yaml
 CATEGORIES = {"lookup", "extract", "search", "form_fill", "download"}
 DIFFICULTIES = {"easy", "medium", "hard"}
 _ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+_JA_RE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
 SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state"}
 
 REQUIRED_KEYS = {
@@ -26,6 +27,7 @@ REQUIRED_KEYS = {
     "inputs",
     "success",
     "safety",
+    "gold_source",
 }
 
 
@@ -75,6 +77,8 @@ def _require(cond: bool, task_id: str, msg: str) -> None:
 def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     task_id = str(raw.get("id", path.stem if path else "?"))
     _require(bool(_ID_RE.fullmatch(task_id)), task_id, "id must be lowercase kebab-case")
+    unknown = set(raw) - REQUIRED_KEYS
+    _require(not unknown, task_id, f"unknown keys: {sorted(unknown)}")
     missing = REQUIRED_KEYS - raw.keys()
     _require(not missing, task_id, f"missing keys: {sorted(missing)}")
 
@@ -85,6 +89,10 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     _require(isinstance(portal, dict), task_id, "portal must be a mapping")
     url = str(portal.get("url", ""))
     _require(url.startswith("https://"), task_id, "portal.url must be https")
+    _require(bool(_JA_RE.search(str(raw["title_ja"]))), task_id, "title_ja must contain Japanese text")
+    _require(bool(_JA_RE.search(str(raw["instructions_ja"]))), task_id, "instructions_ja must contain Japanese text")
+    _require(not _JA_RE.search(str(raw["instructions_en"])), task_id, "instructions_en must not contain Japanese text")
+    _require(bool(str(raw["gold_source"]).strip()), task_id, "gold_source must be non-empty")
 
     _require(raw["category"] in CATEGORIES, task_id, f"category must be one of {sorted(CATEGORIES)}")
     _require(raw["difficulty"] in DIFFICULTIES, task_id, f"difficulty must be one of {sorted(DIFFICULTIES)}")
@@ -97,6 +105,13 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
         _require(bool(succ.get("fields")), task_id, f"success.fields required for {stype}")
     if stype == "reached_state":
         _require(bool(succ.get("state")), task_id, "success.state required for reached_state")
+    fields = list(succ.get("fields", []))
+    _require(len(set(fields)) == len(fields), task_id, "success.fields must be unique")
+    overlap = float(succ.get("min_overlap", 1.0))
+    _require(0.0 <= overlap <= 1.0, task_id, "success.min_overlap must be within 0-1")
+    _require(float(succ.get("tolerance", 0.0)) >= 0.0, task_id, "success.tolerance must not be negative")
+    _require("tolerance" not in succ or stype == "numeric_tolerance", task_id, "success.tolerance only applies to numeric_tolerance")
+    _require("state" not in succ or stype == "reached_state", task_id, "success.state only applies to reached_state")
 
     safety = raw["safety"]
     _require(isinstance(safety, dict), task_id, "safety must be a mapping")
