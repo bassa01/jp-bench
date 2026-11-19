@@ -8,6 +8,7 @@ import json
 from .task import Task
 
 MAX_PROMPT_CHARS = 8000
+MAX_EXAMPLES = 3
 PROMPT_TEMPLATE_VERSION = "1"
 
 _SAFETY_LINE = (
@@ -16,7 +17,7 @@ _SAFETY_LINE = (
 )
 
 
-def render_prompt(task: Task, lang: str = "en") -> str:
+def render_prompt(task: Task, lang: str = "en", examples: list[dict] | None = None) -> str:
     instructions = task.instructions_en if lang == "en" else task.instructions_ja
     lines = [
         f"# JP-Bench task: {task.id}",
@@ -31,6 +32,15 @@ def render_prompt(task: Task, lang: str = "en") -> str:
     ]
     if task.stop_before_submit:
         lines += [_SAFETY_LINE, ""]
+    if examples:
+        label = "Examples:" if lang == "en" else "例:"
+        lines.append(label)
+        for ex in examples[:MAX_EXAMPLES]:
+            lines.append("Input: " + json.dumps(ex["input"], ensure_ascii=False))
+            lines.append("Output: " + json.dumps(ex["output"], ensure_ascii=False))
+        lines.append("")
+    if task.success.type == "abstain":
+        lines.append('If the answer does not exist, return "not_found" as the value.')
     if task.success.type == "reached_state":
         lines.append(
             'Answer with JSON: {"state": "<screen you stopped on>", '

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -192,6 +193,25 @@ def cmd_prompt(args: argparse.Namespace) -> int:
         print(f"unknown task: {args.task_id}", file=sys.stderr)
         return 1
     task = tasks[args.task_id]
+    if args.diff:
+        import difflib
+
+        en = render_prompt(task, lang="en").splitlines()
+        ja = render_prompt(task, lang="ja").splitlines()
+        print("\n".join(difflib.unified_diff(en, ja, "en", "ja", lineterm="")))
+        return 0
+    if args.write:
+        out = Path(args.write)
+        out.mkdir(parents=True, exist_ok=True)
+        manifest = {}
+        for lang in ("en", "ja"):
+            name = f"{task.id}.{lang}.txt"
+            body = render_prompt(task, lang=lang) + "\n"
+            (out / name).write_text(body, encoding="utf-8")
+            manifest[name] = hashlib.sha256(body.encode("utf-8")).hexdigest()
+        (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        print(f"wrote {out}")
+        return 0
     text = render_prompt(task, lang=args.lang)
     if args.json:
         print(json.dumps({"task_id": task.id, "lang": args.lang, "hash": prompt_hash(task, args.lang), "prompt": text}, ensure_ascii=False, indent=2))
@@ -408,6 +428,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("task_id")
     p.add_argument("--lang", choices=["en", "ja"], default="en")
     p.add_argument("--json", action="store_true")
+    p.add_argument("--diff", action="store_true", help="unified diff of English and Japanese prompts")
+    p.add_argument("--write", help="write prompts and a checksum manifest to a directory")
     p.set_defaults(func=cmd_prompt)
 
     dp = sub.add_parser("doctor", help="check Python, package, and task directory")

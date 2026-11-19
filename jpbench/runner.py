@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from .parse import answer_kind, extract_json
-from .prompt import render_prompt
+from .prompt import PROMPT_TEMPLATE_VERSION, render_prompt
 from .scoring import score_task
 from .task import Task
 
@@ -210,6 +210,7 @@ def write_metadata(results_path: Path | str, adapter_name: str, records: list[Ru
         "platform": platform.platform(),
         "count": len(records),
         "prompt_hashes": sorted({r.prompt_hash for r in records}),
+        "prompt_template": PROMPT_TEMPLATE_VERSION,
     }
     path = Path(f"{results_path}.meta.json")
     path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
