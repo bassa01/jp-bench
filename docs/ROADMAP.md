@@ -231,10 +231,10 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 222. [x] scoring: add scorer registry keyed by success type
 223. [x] scoring: fail loudly when a task type has no registered scorer
 224. [x] scoring: treat empty model output as no prediction
-225. [ ] scoring: return a per-field breakdown dict on TaskResult
-226. [ ] scoring: add `details` field (list of per-field results) to TaskResult
+225. [x] scoring: return a per-field breakdown dict on TaskResult
+226. [x] scoring: add `details` field (list of per-field results) to TaskResult
 227. [x] scoring: make TaskResult JSON-serialisable via `to_dict`
-228. [ ] scoring: add `confidence` float to TaskResult (default 1.0)
+228. [x] scoring: add `confidence` float to TaskResult (default 1.0)
 229. [ ] scoring: field_match: report which field failed first in `detail`
 230. [ ] scoring: field_match: support per-field `weights` from success.weights
 231. [ ] scoring: field_match: weighted score = sum(weights of hits) / sum(weights)
@@ -270,8 +270,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 261. [ ] scoring: date_range: accept open-ended ranges (end = 無期限)
 262. [ ] scoring: add `enum` success type with label-to-code mapping
 263. [ ] scoring: enum: fail on unknown label with the valid list
-264. [ ] scoring: add `boolean` success type for yes/no questions
-265. [ ] scoring: boolean: normalize はい/いいえ/有/無
+264. [x] scoring: add `boolean` success type for yes/no questions
+265. [x] scoring: boolean: normalize はい/いいえ/有/無
 266. [ ] scoring: add `url_match` success type using normalize_url
 267. [ ] scoring: add `article_match` success type using normalize_article_ref
 268. [ ] scoring: add `law_number_match` success type
