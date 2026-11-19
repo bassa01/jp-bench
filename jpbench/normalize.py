@@ -42,6 +42,7 @@ def normalize_text(value: object) -> str:
         text = text.replace(short, full)
     text = unicodedata.normalize("NFKC", text)
     text = _ZERO_WIDTH_RE.sub("", text)
+    text = text.replace("\u301c", "~").replace("\u223c", "~")
     text = _DASH_RE.sub("-", text)
     text = _SPACE_RE.sub("", text)
     return text
