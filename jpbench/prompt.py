@@ -7,6 +7,8 @@ import json
 
 from .task import Task
 
+MAX_PROMPT_CHARS = 8000
+
 _SAFETY_LINE = (
     "SAFETY: Do NOT press the final submit / 送信 / 提出 button. "
     "Stop on the confirmation screen and report the state."
@@ -41,3 +43,10 @@ def render_prompt(task: Task, lang: str = "en") -> str:
 def prompt_hash(task: Task, lang: str = "en") -> str:
     """Short stable fingerprint of the rendered prompt, stored with results for reproducibility."""
     return hashlib.sha256(render_prompt(task, lang).encode("utf-8")).hexdigest()[:16]
+
+
+def check_prompt_length(text: str, limit: int = MAX_PROMPT_CHARS) -> str:
+    """Refuse to hand a truncated or oversized prompt to a model."""
+    if len(text) > limit:
+        raise ValueError(f"prompt is {len(text)} chars, limit is {limit}")
+    return text
