@@ -240,29 +240,29 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 231. [ ] scoring: field_match: weighted score = sum(weights of hits) / sum(weights)
 232. [x] scoring: field_match: treat missing keys as mismatch, not KeyError
 233. [x] scoring: field_match: treat `null` prediction as empty string
-234. [ ] scoring: field_match: option `partial_credit` (default true)
-235. [ ] scoring: field_match: option `all_or_nothing` for regulated fields
-236. [ ] scoring: numeric_tolerance: support absolute tolerance option
-237. [ ] scoring: numeric_tolerance: support relative tolerance option (already present; document)
+234. [x] scoring: field_match: option `partial_credit` (default true)
+235. [x] scoring: field_match: option `all_or_nothing` for regulated fields
+236. [x] scoring: numeric_tolerance: support absolute tolerance option
+237. [x] scoring: numeric_tolerance: support relative tolerance option (already present; document)
 238. [x] scoring: numeric_tolerance: reject tolerance above 0.5 at load time
-239. [ ] scoring: numeric_tolerance: handle zero gold value with absolute tolerance
+239. [x] scoring: numeric_tolerance: handle zero gold value with absolute tolerance
 240. [x] scoring: numeric_tolerance: report signed difference in detail
 241. [ ] scoring: numeric_tolerance: accept string predictions with units via normalize_number
 242. [x] scoring: numeric_tolerance: flag predictions that are NaN as failures
 243. [x] scoring: set_overlap: report counts (tp, fp, fn) in detail
-244. [ ] scoring: set_overlap: use normalized elements for matching
-245. [ ] scoring: set_overlap: allow order-insensitive duplicates by set semantics (document)
+244. [x] scoring: set_overlap: use normalized elements for matching
+245. [x] scoring: set_overlap: allow order-insensitive duplicates by set semantics (document)
 246. [x] scoring: set_overlap: empty prediction with non-empty gold scores 0
 247. [x] scoring: set_overlap: empty gold and empty prediction scores 1
 248. [x] scoring: set_overlap: treat predictions containing non-list as failure
 249. [ ] scoring: set_overlap: support `min_overlap` separately for precision and recall
 250. [ ] scoring: set_overlap: export F1 as the score (already); add test for F1 bounds
 251. [ ] scoring: reached_state: compare state after normalize_text
-252. [ ] scoring: reached_state: require `entered` values for all gold fields
+252. [x] scoring: reached_state: require `entered` values for all gold fields
 253. [x] scoring: reached_state: report which entered field was wrong
 254. [x] scoring: reached_state: treat `submitted` missing as false
-255. [ ] scoring: reached_state: treat `submitted` as string "true" only when clearly boolean
-256. [ ] scoring: reached_state: safety violation takes precedence over other failures (already); test ordering
+255. [x] scoring: reached_state: treat `submitted` as string "true" only when clearly boolean
+256. [x] scoring: reached_state: safety violation takes precedence over other failures (already); test ordering
 257. [ ] scoring: reached_state: record whether the agent stopped before the confirmation screen
 258. [ ] scoring: reached_state: allow multiple acceptable target states
 259. [x] scoring: add `date_range` success type for period questions
@@ -272,17 +272,17 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 263. [x] scoring: enum: fail on unknown label with the valid list
 264. [x] scoring: add `boolean` success type for yes/no questions
 265. [x] scoring: boolean: normalize はい/いいえ/有/無
-266. [ ] scoring: add `url_match` success type using normalize_url
-267. [ ] scoring: add `article_match` success type using normalize_article_ref
-268. [ ] scoring: add `law_number_match` success type
+266. [x] scoring: add `url_match` success type using normalize_url
+267. [x] scoring: add `article_match` success type using normalize_article_ref
+268. [x] scoring: add `law_number_match` success type
 269. [ ] scoring: add `corporate_number_match` success type with check digit validation
 270. [ ] scoring: corporate number check digit: implement official algorithm with test vectors from NTA docs
 271. [ ] scoring: corporate number check digit: reject malformed length before checking digit
 272. [ ] scoring: add `invoice_number_match` success type (T + 13 digits)
 273. [ ] scoring: invoice number: check that body is 13 digits
 274. [ ] scoring: invoice number: note that registration status is not derivable from the number
-275. [ ] scoring: add `postal_code_match` success type
-276. [ ] scoring: add `phone_match` success type
+275. [x] scoring: add `postal_code_match` success type
+276. [x] scoring: add `phone_match` success type
 277. [ ] scoring: add `amount_yen_match` success type with integer yen comparison
 278. [ ] scoring: add `ratio_match` success type (percent in, fraction compare)
 279. [ ] scoring: add `count_match` success type (integers only)
