@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
+import shutil
 import sys
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
@@ -26,6 +28,18 @@ from .task import TaskError, load_tasks, parse_task
 DEFAULT_TASKS = Path(__file__).resolve().parent.parent / "tasks"
 
 
+class InputError(Exception):
+    """A user-supplied file could not be read or parsed."""
+
+
+def _read_json(path: str):
+    text = Path(path).read_text(encoding="utf-8")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise InputError(f"{path}: invalid JSON at line {exc.lineno}, column {exc.colno}: {exc.msg}") from exc
+
+
 def _load(path: str | None):
     return load_tasks(Path(path) if path else DEFAULT_TASKS)
 
@@ -39,6 +53,7 @@ def cmd_list(args: argparse.Namespace) -> int:
         and (not args.tag or args.tag in t.tags)
         and (args.all or not t.deprecated)
     ]
+    selected.sort(key=lambda t: getattr(t, args.sort if args.sort != "id" else "id"))
     if args.json:
         rows = [
             {
@@ -64,6 +79,12 @@ def cmd_show(args: argparse.Namespace) -> int:
         print(f"unknown task: {args.task_id}", file=sys.stderr)
         return 1
     t = tasks[args.task_id]
+    if args.prompt:
+        print(render_prompt(t, lang="en"))
+        return 0
+    if args.gold_source:
+        print(t.gold_source)
+        return 0
     if args.json:
         print(
             json.dumps(
@@ -143,6 +164,8 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         print(f"tasks invalid: {exc}")
         return 1
     print(f"tasks: {count} at {directory}")
+    print(f"ruff: {'installed' if shutil.which('ruff') else 'not installed (optional, used in CI)'}")
+    print(f"results directory writable: {'yes' if os.access('.', os.W_OK) else 'no'}")
     try:
         import pytest  # noqa: F401
 
@@ -179,8 +202,8 @@ def cmd_prompt(args: argparse.Namespace) -> int:
 
 def cmd_score(args: argparse.Namespace) -> int:
     tasks = _load(args.tasks)
-    preds = json.loads(Path(args.pred).read_text(encoding="utf-8"))
-    golds = json.loads(Path(args.gold).read_text(encoding="utf-8"))
+    preds = _read_json(args.pred)
+    golds = _read_json(args.gold)
     results = score_all(tasks, preds, golds)
     if not results:
         print("no tasks with gold answers", file=sys.stderr)
@@ -239,8 +262,8 @@ def _html_report(results: list, summary: dict) -> str:
 
 def cmd_report(args: argparse.Namespace) -> int:
     tasks = _load(args.tasks)
-    preds = json.loads(Path(args.pred).read_text(encoding="utf-8"))
-    golds = json.loads(Path(args.gold).read_text(encoding="utf-8"))
+    preds = _read_json(args.pred)
+    golds = _read_json(args.gold)
     results = score_all(tasks, preds, golds)
     if not results:
         print("no tasks with gold answers", file=sys.stderr)
@@ -301,7 +324,7 @@ def _markdown_report(tasks: list, results: list, summary: dict) -> str:
 
 def cmd_run(args: argparse.Namespace) -> int:
     tasks = _load(args.tasks)
-    golds = json.loads(Path(args.gold).read_text(encoding="utf-8"))
+    golds = _read_json(args.gold)
     selected = [t for t in tasks if t.id in golds]
     if args.seed is not None:
         random.Random(args.seed).shuffle(selected)
@@ -367,11 +390,14 @@ def main(argv: list[str] | None = None) -> int:
     lp.add_argument("--json", action="store_true")
     lp.add_argument("--tag")
     lp.add_argument("--all", action="store_true", help="include deprecated tasks")
+    lp.add_argument("--sort", choices=["id", "difficulty", "category"], default="id")
     lp.set_defaults(func=cmd_list)
 
     shp = sub.add_parser("show", help="show one task")
     shp.add_argument("task_id")
     shp.add_argument("--json", action="store_true")
+    shp.add_argument("--prompt", action="store_true", help="print the English prompt")
+    shp.add_argument("--gold-source", action="store_true", help="print the gold source line")
     shp.set_defaults(func=cmd_show)
     vp = sub.add_parser("validate", help="validate task files")
     vp.add_argument("--only", help="validate a single task file")
@@ -418,7 +444,11 @@ def main(argv: list[str] | None = None) -> int:
     s.set_defaults(func=cmd_score)
 
     args = parser.parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except InputError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
