@@ -6,8 +6,8 @@ import json
 import re
 from typing import Any
 
-_REASONING_RE = re.compile(r"<(think|thinking)>.*?</\1>", re.S)
-_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.S)
+_REASONING_RE = re.compile(r"<(think|thinking)>.*?</\1>", re.DOTALL)
+_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
 _REFUSAL_PATTERNS = [
     "申し訳",
     "お手伝いできません",
@@ -28,12 +28,14 @@ def extract_json(text: str) -> dict[str, Any]:
     cleaned = strip_reasoning(text)
     fenced = _FENCE_RE.search(cleaned)
     candidate = fenced.group(1) if fenced else cleaned
+    if candidate.strip().startswith("["):
+        raise TypeError("model output JSON is not an object")
     start, end = candidate.find("{"), candidate.rfind("}")
     if start == -1 or end < start:
         raise ValueError("no JSON object in model output")
     value = json.loads(candidate[start : end + 1])
     if not isinstance(value, dict):
-        raise ValueError("model output JSON is not an object")
+        raise TypeError("model output JSON is not an object")
     return value
 
 
