@@ -35,16 +35,16 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 30. [ ] schema: add `deprecated` flag and hide deprecated tasks from `list` by default
 31. [ ] schema: add `replaced_by` pointing to a valid task id
 32. [ ] schema: reject `replaced_by` cycles
-33. [ ] schema: add `created` and `updated` dates (ISO 8601)
-34. [ ] schema: reject `updated` earlier than `created`
-35. [ ] schema: add `owner` field for the person responsible for gold answers
-36. [ ] schema: add `review_status` (draft, reviewed, published)
+33. [x] schema: add `created` and `updated` dates (ISO 8601)
+34. [x] schema: reject `updated` earlier than `created`
+35. [x] schema: add `owner` field for the person responsible for gold answers
+36. [x] schema: add `review_status` (draft, reviewed, published)
 37. [ ] schema: only `published` tasks may appear in the leaderboard set
 38. [ ] schema: reject tasks with `review_status: published` but no `gold_source`
 39. [ ] task model: add `Success.weights` for weighted field scoring
-40. [ ] task model: add `Task.tags` as a sorted tuple
-41. [ ] task model: add `Task.source_documents` list (URLs of official pages)
-42. [ ] task model: add `Task.snapshot_date` (date the gold was fetched)
+40. [x] task model: add `Task.tags` as a sorted tuple
+41. [x] task model: add `Task.source_documents` list (URLs of official pages)
+42. [x] task model: add `Task.snapshot_date` (date the gold was fetched)
 43. [ ] task model: make `Task` hashable for use in sets
 44. [ ] task model: add `Task.to_dict` for JSON export
 45. [ ] task model: add `Task.from_dict` as the public constructor
@@ -619,7 +619,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 604. [x] cli: add `report` subcommand with per-difficulty summary
 605. [x] cli: add `report --format csv`
 606. [x] cli: add `list --json` output
-607. [ ] cli: add `list --tag <tag>` filter (depends on task tags, item 40)
+607. [x] cli: add `list --tag <tag>` filter (depends on task tags, item 40)
 608. [ ] cli: add `list --sort id|difficulty|category`
 609. [ ] cli: add `list --columns` to choose output columns
 610. [x] cli: add `show --json`
@@ -806,12 +806,12 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 789. [ ] task content: licence: block tasks whose source licence is unknown
 790. [ ] task content: licence: attribution line generated from task metadata
 791. [ ] task content: licence: README table of sources and licences
-792. [ ] task content: tags: add `domain` tag (corporate, tax, legal, subsidy, labor)
+792. [x] task content: tags: add `domain` tag (corporate, tax, legal, subsidy, labor)
 793. [ ] task content: tags: add `needs_login` tag
 794. [ ] task content: tags: add `multi_page` tag
 795. [ ] task content: tags: add `japanese_era` tag for dates in era notation
 796. [ ] task content: tags: add `full_width_input` tag
-797. [ ] task content: tags: validate tags against an allowed list
+797. [x] task content: tags: validate tags against an allowed list
 798. [ ] task content: tags: list tasks by tag in README
 799. [ ] task content: budgets: set max_steps for every task
 800. [ ] task content: budgets: set timeout_seconds for every task
