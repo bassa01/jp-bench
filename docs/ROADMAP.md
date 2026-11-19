@@ -26,15 +26,15 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 21. [ ] loader: cache parsed tasks per directory for one run
 22. [ ] loader: report all validation errors instead of stopping at the first
 23. [ ] loader: support nested task directories (`tasks/<category>/`)
-24. [ ] loader: ignore hidden files starting with `.`
-25. [ ] loader: reject symlinks that point outside the task directory
-26. [ ] loader: enforce UTF-8 and reject BOM-prefixed files with a message
-27. [ ] loader: reject tabs in YAML indentation with the line number
-28. [ ] schema: add `version` field to task files (start at 1)
-29. [ ] schema: reject task files whose `version` is newer than the loader supports
-30. [ ] schema: add `deprecated` flag and hide deprecated tasks from `list` by default
-31. [ ] schema: add `replaced_by` pointing to a valid task id
-32. [ ] schema: reject `replaced_by` cycles
+24. [x] loader: ignore hidden files starting with `.`
+25. [x] loader: reject symlinks that point outside the task directory
+26. [x] loader: enforce UTF-8 and reject BOM-prefixed files with a message
+27. [x] loader: reject tabs in YAML indentation with the line number
+28. [x] schema: add `version` field to task files (start at 1)
+29. [x] schema: reject task files whose `version` is newer than the loader supports
+30. [x] schema: add `deprecated` flag and hide deprecated tasks from `list` by default
+31. [x] schema: add `replaced_by` pointing to a valid task id
+32. [x] schema: reject `replaced_by` cycles
 33. [x] schema: add `created` and `updated` dates (ISO 8601)
 34. [x] schema: reject `updated` earlier than `created`
 35. [x] schema: add `owner` field for the person responsible for gold answers
@@ -49,15 +49,15 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 44. [ ] task model: add `Task.to_dict` for JSON export
 45. [ ] task model: add `Task.from_dict` as the public constructor
 46. [ ] task model: provide `__repr__` that omits instructions
-47. [ ] loader: fail when two files declare the same `title_en`
+47. [x] loader: fail when two files declare the same `title_en`
 48. [ ] loader: warn when a task has no `title_ja`
 49. [ ] loader: count tasks per category on load (for `validate` output)
 50. [ ] loader: count tasks per difficulty on load
-51. [ ] validate: print a per-category summary line
-52. [ ] validate: print a per-difficulty summary line
-53. [ ] validate: exit non-zero when any task is `deprecated` without `replaced_by`
+51. [x] validate: print a per-category summary line
+52. [x] validate: print a per-difficulty summary line
+53. [x] validate: exit non-zero when any task is `deprecated` without `replaced_by`
 54. [ ] validate: add `--strict` to treat warnings as errors
-55. [ ] validate: add `--json` for machine-readable output
+55. [x] validate: add `--json` for machine-readable output
 56. [x] validate: check that every `form_fill` task has a `reached_state` success rule
 57. [x] validate: check that every `reached_state` task defines `state`
 58. [x] validate: check that `inputs` values are strings, numbers, or lists only
@@ -77,7 +77,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 72. [x] schema: require `allowed_domains` to include the portal host
 73. [x] schema: reject `allowed_domains` entries containing paths
 74. [ ] schema: add `expected_pages` count (informational)
-75. [ ] loader: detect and report duplicate `title_ja` across tasks
+75. [x] loader: detect and report duplicate `title_ja` across tasks
 76. [ ] loader: detect tasks whose `portal.url` is not reachable in the offline snapshot list
 77. [ ] tests: fixture with each validation error type, one test per message
 78. [ ] tests: fixture directory with nested categories
