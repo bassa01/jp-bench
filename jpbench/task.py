@@ -94,6 +94,61 @@ class Task:
     allowed_domains: tuple[str, ...] = ()
     auth_method: str = ""
 
+    def to_dict(self) -> dict[str, Any]:
+        """Dict in the same shape as a task file, so parse_task(to_dict()) round-trips."""
+        success: dict[str, Any] = {"type": self.success.type, "fields": list(self.success.fields)}
+        if self.success.type == "numeric_tolerance":
+            success["tolerance"] = self.success.tolerance
+        if self.success.tolerance_mode != "relative":
+            success["tolerance_mode"] = self.success.tolerance_mode
+        if self.success.type == "set_overlap" and self.success.min_overlap != 1.0:
+            success["min_overlap"] = self.success.min_overlap
+        if self.success.type == "reached_state":
+            success["state"] = self.success.state
+        if self.success.labels:
+            success["labels"] = dict(self.success.labels)
+        if not self.success.partial_credit:
+            success["partial_credit"] = False
+        data: dict[str, Any] = {
+            "id": self.id,
+            "title_ja": self.title_ja,
+            "title_en": self.title_en,
+            "portal": {"name_ja": self.portal.name_ja, "url": self.portal.url, "operator": self.portal.operator},
+            "category": self.category,
+            "difficulty": self.difficulty,
+            "instructions_ja": self.instructions_ja,
+            "instructions_en": self.instructions_en,
+            "inputs": dict(self.inputs),
+            "success": success,
+            "safety": {"stop_before_submit": self.stop_before_submit, "auth_required": self.auth_required},
+            "gold_source": self.gold_source,
+            "review_status": self.review_status,
+            "version": self.version,
+        }
+        optional = {
+            "tags": list(self.tags),
+            "created": self.created,
+            "updated": self.updated,
+            "owner": self.owner,
+            "snapshot_date": self.snapshot_date,
+            "source_documents": list(self.source_documents),
+            "deprecated": self.deprecated,
+            "replaced_by": self.replaced_by,
+            "max_steps": self.max_steps,
+            "timeout_seconds": self.timeout_seconds,
+            "allowed_domains": list(self.allowed_domains),
+            "auth_method": self.auth_method,
+        }
+        data.update({k: v for k, v in optional.items() if v})
+        return data
+
+    @classmethod
+    def from_dict(cls, raw: dict[str, Any]) -> Task:
+        return parse_task(raw)
+
+    def __repr__(self) -> str:
+        return f"Task(id={self.id!r}, category={self.category!r}, difficulty={self.difficulty!r})"
+
     @property
     def requires_login(self) -> bool:
         return self.auth_required
@@ -147,6 +202,12 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     _require(bool(_ID_RE.fullmatch(task_id)), task_id, "id must be lowercase kebab-case")
     unknown = set(raw) - REQUIRED_KEYS - OPTIONAL_KEYS
     _require(not unknown, task_id, f"unknown keys: {sorted(unknown)}")
+    if isinstance(raw.get("portal"), dict):
+        extra = set(raw["portal"]) - {"name_ja", "url", "operator"}
+        _require(not extra, task_id, f"unknown portal keys: {sorted(extra)}")
+    if isinstance(raw.get("safety"), dict):
+        extra = set(raw["safety"]) - {"stop_before_submit", "auth_required"}
+        _require(not extra, task_id, f"unknown safety keys: {sorted(extra)}")
     missing = REQUIRED_KEYS - raw.keys()
     _require(not missing, task_id, f"missing keys: {sorted(missing)}")
 
@@ -215,6 +276,8 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     deprecated = bool(raw.get("deprecated", False))
     replaced_by = str(raw.get("replaced_by", ""))
     _require(not deprecated or bool(replaced_by), task_id, "deprecated tasks must name replaced_by")
+    if str(raw.get("review_status", "draft")) == "published":
+        _require(bool(raw.get("source_documents")), task_id, "published tasks must list source_documents")
     created = _optional_date(raw, "created", task_id)
     updated = _optional_date(raw, "updated", task_id)
     _require(not (created and updated) or updated >= created, task_id, "updated must not be earlier than created")
@@ -266,8 +329,8 @@ def load_tasks(directory: Path | str) -> list[Task]:
     seen: dict[str, str] = {}
     titles_en: dict[str, str] = {}
     titles_ja: dict[str, str] = {}
-    for path in sorted(directory.glob("*.yaml")):
-        if path.name.startswith(("_", ".")):
+    for path in sorted(directory.rglob("*.yaml")):
+        if path.name.startswith(("_", ".")) or any(part.startswith(".") for part in path.relative_to(directory).parts):
             continue
         if path.is_symlink() and not path.resolve().is_relative_to(root):
             raise TaskError(f"{path.name}: symlink points outside the task directory")
@@ -292,6 +355,11 @@ def load_tasks(directory: Path | str) -> list[Task]:
         tasks.append(task)
     _check_replacements(tasks)
     return tasks
+
+
+def load_task_ids(directory: Path | str) -> list[str]:
+    """Task ids in a directory, in load order, without keeping the parsed tasks."""
+    return [t.id for t in load_tasks(directory)]
 
 
 def _check_replacements(tasks: list[Task]) -> None:
