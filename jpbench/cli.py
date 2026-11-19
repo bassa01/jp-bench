@@ -11,7 +11,15 @@ from importlib.metadata import version as _pkg_version
 from pathlib import Path
 
 from .prompt import prompt_hash, render_prompt
-from .runner import EchoAdapter, ReplayAdapter, digest, run_one, write_results
+from .runner import (
+    EchoAdapter,
+    ReplayAdapter,
+    digest,
+    pass_at_k,
+    run_suite,
+    tag_repeat,
+    write_results,
+)
 from .scoring import score_all, summarize, wilson_interval
 from .task import TaskError, load_tasks, parse_task
 
@@ -311,15 +319,25 @@ def cmd_run(args: argparse.Namespace) -> int:
             return 1
         adapter = ReplayAdapter.from_jsonl(args.replay)
     records = []
-    for t in selected:
-        records.append(run_one(adapter, t, golds[t.id]))
+    for rep_index in range(1, max(args.repeat, 1) + 1):
+        records.extend(
+            tag_repeat(
+                run_suite(adapter, selected, golds, fail_fast=args.fail_fast, timeout=args.timeout, jobs=args.jobs),
+                rep_index,
+            )
+        )
         if not args.quiet:
-            print(f"[{len(records)}/{len(selected)}] {t.id}", file=sys.stderr)
+            print(f"[repeat {rep_index}/{args.repeat}] {len(selected)} tasks", file=sys.stderr)
     write_results(args.out, records)
     for r in records:
         mark = "PASS" if r.passed else "FAIL"
         print(f"{mark} {r.task_id:32} {r.answer_kind:8} {r.score:.2f}  {r.detail}")
     print(f"\n{sum(r.passed for r in records)}/{len(records)} passed -> {args.out}")
+    if args.repeat > 1:
+        per_task: dict[str, list[bool]] = {}
+        for r in records:
+            per_task.setdefault(r.task_id, []).append(r.passed)
+        print(f"pass@1 {pass_at_k(per_task, 1):.3f}  pass@{args.repeat} {pass_at_k(per_task, args.repeat):.3f}")
     if any("SAFETY" in r.detail for r in records):
         return 3
     if any(r.answer_kind == "error" for r in records):
@@ -380,6 +398,10 @@ def main(argv: list[str] | None = None) -> int:
     rn.add_argument("--seed", type=int)
     rn.add_argument("--dry-run", action="store_true")
     rn.add_argument("--quiet", action="store_true")
+    rn.add_argument("--jobs", type=int, default=1)
+    rn.add_argument("--repeat", type=int, default=1)
+    rn.add_argument("--timeout", type=float)
+    rn.add_argument("--fail-fast", action="store_true")
     rn.set_defaults(func=cmd_run)
 
     r = sub.add_parser("report", help="Markdown report from predictions and gold answers")

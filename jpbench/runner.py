@@ -11,7 +11,7 @@ import os
 import platform
 import sys
 import tempfile
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -95,6 +95,7 @@ class RunRecord:
     raw_output: str
     error: str = ""
     attempts: int = 1
+    repeat: int = 1
 
 
 def _complete(adapter: Any, prompt: str, timeout: float | None) -> str:
@@ -148,16 +149,20 @@ def run_suite(
     fail_fast: bool = False,
     skip: set[str] | frozenset[str] = frozenset(),
     timeout: float | None = None,
+    jobs: int = 1,
 ) -> list[RunRecord]:
-    records: list[RunRecord] = []
-    for task in tasks:
-        if task.id not in golds or task.id in skip:
-            continue
-        rec = run_one(adapter, task, golds[task.id], lang=lang, timeout=timeout)
-        records.append(rec)
-        if fail_fast and rec.answer_kind == "error":
-            break
-    return records
+    """Run tasks in order. With jobs > 1 (and not fail-fast) tasks run concurrently but results keep order."""
+    chosen = [t for t in tasks if t.id in golds and t.id not in skip]
+    if jobs <= 1 or fail_fast:
+        records: list[RunRecord] = []
+        for task in chosen:
+            rec = run_one(adapter, task, golds[task.id], lang=lang, timeout=timeout)
+            records.append(rec)
+            if fail_fast and rec.answer_kind == "error":
+                break
+        return records
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
+        return list(pool.map(lambda t: run_one(adapter, t, golds[t.id], lang=lang, timeout=timeout), chosen))
 
 
 def pass_at_k(results: dict[str, list[bool]], k: int) -> float:
@@ -224,3 +229,8 @@ def write_results(path: Path | str, records: list[RunRecord]) -> None:
         if os.path.exists(tmp):
             os.unlink(tmp)
         raise
+
+
+def tag_repeat(records: list[RunRecord], repeat: int) -> list[RunRecord]:
+    """Stamp each record with the repetition it came from."""
+    return [replace(r, repeat=repeat) for r in records]
