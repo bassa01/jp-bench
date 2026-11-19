@@ -181,6 +181,43 @@ def _version() -> str:
         return "0.0.0+unknown"
 
 
+def _csv_report(results: list) -> str:
+    import csv
+    import io
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["task_id", "passed", "score", "detail"])
+    for r in results:
+        writer.writerow([r.task_id, r.passed, f"{r.score:.4f}", r.detail])
+    return buf.getvalue()
+
+
+def _json_report(results: list, summary: dict) -> str:
+    payload = {
+        "schema_version": 1,
+        "summary": summary,
+        "results": [{**r.to_dict(), "field_results": r.field_results} for r in results],
+    }
+    return json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+
+
+def _html_report(results: list, summary: dict) -> str:
+    import html
+
+    rows = "".join(
+        f"<tr><td>{html.escape(r.task_id)}</td><td>{'PASS' if r.passed else 'FAIL'}</td>"
+        f"<td>{r.score:.2f}</td><td>{html.escape(r.detail)}</td></tr>"
+        for r in results
+    )
+    return (
+        "<!doctype html><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width\">"
+        "<title>JP-Bench report</title><h1>JP-Bench report</h1>"
+        f"<p>Passed {summary['passed']}/{summary['total']}, mean score {summary['mean_score']:.3f}</p>"
+        "<table><tr><th>task</th><th>result</th><th>score</th><th>detail</th></tr>" + rows + "</table>\n"
+    )
+
+
 def cmd_report(args: argparse.Namespace) -> int:
     tasks = _load(args.tasks)
     preds = json.loads(Path(args.pred).read_text(encoding="utf-8"))
@@ -189,24 +226,35 @@ def cmd_report(args: argparse.Namespace) -> int:
     if not results:
         print("no tasks with gold answers", file=sys.stderr)
         return 1
-    if args.format == "csv":
-        import csv
-        import io
-
-        buf = io.StringIO()
-        writer = csv.writer(buf)
-        writer.writerow(["task_id", "passed", "score", "detail"])
-        for r in results:
-            writer.writerow([r.task_id, r.passed, f"{r.score:.4f}", r.detail])
-        print(buf.getvalue(), end="")
-        return 0
     summary = summarize(results, {t.id: t.difficulty for t in tasks})
+    if args.format == "csv":
+        text = _csv_report(results)
+    elif args.format == "json":
+        text = _json_report(results, summary)
+    elif args.format == "html":
+        text = _html_report(results, summary)
+    else:
+        text = _markdown_report(tasks, results, summary)
+    if args.output:
+        out = Path(args.output)
+        if out.exists() and not args.force:
+            print(f"{out} exists; pass --force to overwrite", file=sys.stderr)
+            return 1
+        out.write_text(text, encoding="utf-8")
+        print(f"wrote {out}")
+    else:
+        print(text, end="")
+    return 0
+
+
+def _markdown_report(tasks: list, results: list, summary: dict) -> str:
     low, high = wilson_interval(summary["passed"], summary["total"])
     category = {t.id: t.category for t in tasks}
     kind = {t.id: t.success.type for t in tasks}
     lines = ["# JP-Bench report", "", "| task | result | score | detail |", "|---|---|---|---|"]
     for r in results:
-        lines.append(f"| {r.task_id} | {'PASS' if r.passed else 'FAIL'} | {r.score:.2f} | {r.detail} |")
+        detail = r.detail.replace("|", "\\|")
+        lines.append(f"| {r.task_id} | {'PASS' if r.passed else 'FAIL'} | {r.score:.2f} | {detail} |")
     lines += [
         "",
         (
@@ -229,17 +277,7 @@ def cmd_report(args: argparse.Namespace) -> int:
     safety = [r.task_id for r in results if "SAFETY" in r.detail]
     if safety:
         lines += ["", "## Safety violations", ""] + [f"- {tid}" for tid in safety]
-    text = "\n".join(lines) + "\n"
-    if args.output:
-        out = Path(args.output)
-        if out.exists() and not args.force:
-            print(f"{out} exists; pass --force to overwrite", file=sys.stderr)
-            return 1
-        out.write_text(text, encoding="utf-8")
-        print(f"wrote {out}")
-    else:
-        print(text, end="")
-    return 0
+    return "\n".join(lines) + "\n"
 
 
 def cmd_run(args: argparse.Namespace) -> int:
@@ -334,7 +372,7 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("report", help="Markdown report from predictions and gold answers")
     r.add_argument("--pred", required=True)
     r.add_argument("--gold", required=True)
-    r.add_argument("--format", choices=["md", "csv"], default="md")
+    r.add_argument("--format", choices=["md", "csv", "json", "html"], default="md")
     r.add_argument("--output")
     r.add_argument("--force", action="store_true")
     r.set_defaults(func=cmd_report)
