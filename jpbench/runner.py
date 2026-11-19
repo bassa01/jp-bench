@@ -9,8 +9,10 @@ import importlib.metadata
 import json
 import os
 import platform
+import random
 import sys
 import tempfile
+import time
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any
@@ -115,15 +117,27 @@ def run_one(
     lang: str = "en",
     retries: int = 2,
     timeout: float | None = None,
+    backoff: float = 0.0,
+    max_total_seconds: float | None = None,
+    seed: int | None = None,
 ) -> RunRecord:
-    """Run one task. Adapter exceptions are retried; timeouts and parse failures are not."""
+    """Run one task. Adapter exceptions are retried with exponential backoff and seeded jitter.
+
+    Timeouts and parse failures are never retried. `max_total_seconds` caps the time spent
+    waiting and retrying for one task.
+    """
     prompt = render_prompt(task, lang=lang)
     h = digest(prompt)
+    rng = random.Random(seed)
+    started = time.monotonic()
     error = ""
+    raw = ""
     attempts = 0
+    succeeded = False
     for attempts in range(1, retries + 2):
         try:
             raw = _complete(adapter, prompt, timeout)
+            succeeded = True
             break
         except concurrent.futures.TimeoutError as exc:
             if timeout is not None:
@@ -131,7 +145,14 @@ def run_one(
             error = f"{type(exc).__name__}: {exc}"
         except Exception as exc:  # noqa: BLE001 - adapter failures are recorded, never fatal to the run
             error = f"{type(exc).__name__}: {exc}"
-    else:
+        if attempts > retries:
+            break
+        delay = backoff * (2 ** (attempts - 1)) * (1 + rng.uniform(0, 0.1)) if backoff else 0.0
+        if max_total_seconds is not None and time.monotonic() - started + delay > max_total_seconds:
+            break
+        if delay:
+            time.sleep(delay)
+    if not succeeded:
         return RunRecord(task.id, h, "error", False, 0.0, "adapter error", "", error, attempts)
     kind = answer_kind(raw)
     if kind != "json":

@@ -218,6 +218,8 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     _require(isinstance(portal, dict), task_id, "portal must be a mapping")
     url = str(portal.get("url", ""))
     _require(url.startswith("https://"), task_id, "portal.url must be https")
+    host = urlsplit(url).hostname or ""
+    _require(host.endswith((".go.jp", ".or.jp")), task_id, "portal host must be a .go.jp or .or.jp government or public-body domain")
     _require(bool(_JA_RE.search(str(raw["title_ja"]))), task_id, "title_ja must contain Japanese text")
     _require(bool(_JA_RE.search(str(raw["instructions_ja"]))), task_id, "instructions_ja must contain Japanese text")
     _require(not _JA_RE.search(str(raw["instructions_en"])), task_id, "instructions_en must not contain Japanese text")
