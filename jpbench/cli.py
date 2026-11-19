@@ -21,11 +21,26 @@ def _load(path: str | None):
 
 
 def cmd_list(args: argparse.Namespace) -> int:
-    for t in _load(args.tasks):
-        if args.category and t.category != args.category:
-            continue
-        if args.difficulty and t.difficulty != args.difficulty:
-            continue
+    selected = [
+        t
+        for t in _load(args.tasks)
+        if (not args.category or t.category == args.category)
+        and (not args.difficulty or t.difficulty == args.difficulty)
+    ]
+    if args.json:
+        rows = [
+            {
+                "id": t.id,
+                "title_ja": t.title_ja,
+                "category": t.category,
+                "difficulty": t.difficulty,
+                "stop_before_submit": t.stop_before_submit,
+            }
+            for t in selected
+        ]
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+        return 0
+    for t in selected:
         lock = " [stop-before-submit]" if t.stop_before_submit else ""
         print(f"{t.id:32} {t.difficulty:6} {t.category:9} {t.title_ja}{lock}")
     return 0
@@ -37,6 +52,25 @@ def cmd_show(args: argparse.Namespace) -> int:
         print(f"unknown task: {args.task_id}", file=sys.stderr)
         return 1
     t = tasks[args.task_id]
+    if args.json:
+        print(
+            json.dumps(
+                {
+                    "id": t.id,
+                    "title_ja": t.title_ja,
+                    "title_en": t.title_en,
+                    "portal": t.portal.url,
+                    "category": t.category,
+                    "difficulty": t.difficulty,
+                    "success_type": t.success.type,
+                    "fields": t.success.fields,
+                    "stop_before_submit": t.stop_before_submit,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
     print(
         f"id: {t.id}\n"
         f"title: {t.title_ja} / {t.title_en}\n"
@@ -139,10 +173,12 @@ def main(argv: list[str] | None = None) -> int:
     lp = sub.add_parser("list", help="list tasks")
     lp.add_argument("--category")
     lp.add_argument("--difficulty")
+    lp.add_argument("--json", action="store_true")
     lp.set_defaults(func=cmd_list)
 
     shp = sub.add_parser("show", help="show one task")
     shp.add_argument("task_id")
+    shp.add_argument("--json", action="store_true")
     shp.set_defaults(func=cmd_show)
     sub.add_parser("validate", help="validate task files").set_defaults(func=cmd_validate)
 
