@@ -499,9 +499,9 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 486. [ ] runner: add token counting hook (no provider lookup)
 487. [ ] runner: add cost estimation hook using a price table file
 488. [ ] runner: price table file is validated at load
-489. [ ] runner: add `--dry-run` that renders prompts and skips adapters
-490. [ ] runner: add `--limit N` to run only the first N tasks
-491. [ ] runner: add `--seed` for deterministic task order
+489. [x] runner: add `--dry-run` that renders prompts and skips adapters
+490. [x] runner: add `--limit N` to run only the first N tasks
+491. [x] runner: add `--seed` for deterministic task order
 492. [ ] runner: add `--repeat K` to run each task K times
 493. [ ] runner: compute pass@1 and pass@K when repeat > 1
 494. [x] runner: write results as JSON Lines to `results/<run-id>.jsonl`
@@ -514,18 +514,18 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 501. [ ] runner: detect a half-written last line and drop it safely
 502. [ ] runner: lock the results file while writing (fcntl, POSIX only)
 503. [x] runner: write results atomically using a temp file and rename
-504. [ ] runner: exit code 2 when some tasks errored
-505. [ ] runner: exit code 3 when a safety violation occurred
-506. [ ] runner: print a summary table at the end
-507. [ ] runner: print progress as `[n/N] task-id`
-508. [ ] runner: suppress progress with `--quiet`
+504. [x] runner: exit code 2 when some tasks errored
+505. [x] runner: exit code 3 when a safety violation occurred
+506. [x] runner: print a summary table at the end
+507. [x] runner: print progress as `[n/N] task-id`
+508. [x] runner: suppress progress with `--quiet`
 509. [ ] runner: colour output only when stdout is a TTY
 510. [ ] runner: respect NO_COLOR environment variable
-511. [ ] runner: retry transient adapter errors up to 2 times
-512. [ ] runner: do not retry parse errors
+511. [x] runner: retry transient adapter errors up to 2 times
+512. [x] runner: do not retry parse errors
 513. [ ] runner: back off exponentially with jitter (seeded in tests)
 514. [ ] runner: cap total retry time per task
-515. [ ] runner: record retry count per task
+515. [x] runner: record retry count per task
 516. [ ] runner: concurrency flag `--jobs N` (default 1)
 517. [ ] runner: concurrency keeps result order stable
 518. [ ] runner: concurrency test with 20 fake tasks
