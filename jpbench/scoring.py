@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -131,3 +132,14 @@ def summarize(results: list[TaskResult], difficulty_by_id: dict[str, str]) -> di
         "mean_score": sum(r.score for r in results) / total if total else 0.0,
         "by_difficulty": by,
     }
+
+
+def wilson_interval(passed: int, total: int, z: float = 1.96) -> tuple[float, float]:
+    """95% Wilson score interval for a pass rate."""
+    if total == 0:
+        return (0.0, 0.0)
+    p = passed / total
+    denom = 1 + z * z / total
+    centre = (p + z * z / (2 * total)) / denom
+    half = z * math.sqrt(p * (1 - p) / total + z * z / (4 * total * total)) / denom
+    return (max(0.0, centre - half), min(1.0, centre + half))

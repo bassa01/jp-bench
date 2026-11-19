@@ -12,8 +12,8 @@ from pathlib import Path
 
 from .prompt import render_prompt
 from .runner import EchoAdapter, ReplayAdapter, digest, run_one, write_results
-from .scoring import score_all, summarize
-from .task import TaskError, load_tasks
+from .scoring import score_all, summarize, wilson_interval
+from .task import TaskError, load_tasks, parse_task
 
 DEFAULT_TASKS = Path(__file__).resolve().parent.parent / "tasks"
 
@@ -86,12 +86,60 @@ def cmd_show(args: argparse.Namespace) -> int:
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
+    import yaml
+
+    if args.only:
+        path = Path(args.only)
+        try:
+            with path.open(encoding="utf-8") as fh:
+                raw = yaml.safe_load(fh)
+            if not isinstance(raw, dict):
+                raise TaskError(f"{path.name}: top level must be a mapping")
+            parse_task(raw, path)
+        except (TaskError, yaml.YAMLError, OSError) as exc:
+            print(f"invalid: {exc}", file=sys.stderr)
+            return 1
+        print(f"ok: {path.name}")
+        return 0
     try:
         tasks = _load(args.tasks)
     except TaskError as exc:
         print(f"invalid: {exc}", file=sys.stderr)
         return 1
     print(f"ok: {len(tasks)} tasks")
+    return 0
+
+
+def cmd_doctor(args: argparse.Namespace) -> int:
+    directory = Path(args.tasks) if args.tasks else DEFAULT_TASKS
+    print(f"python {sys.version.split()[0]}")
+    print(f"jpbench {_version()}")
+    if not directory.is_dir():
+        print(f"task directory missing: {directory}")
+        return 1
+    try:
+        count = len(load_tasks(directory))
+    except TaskError as exc:
+        print(f"tasks invalid: {exc}")
+        return 1
+    print(f"tasks: {count} at {directory}")
+    try:
+        import pytest  # noqa: F401
+
+        print("pytest: installed")
+    except ImportError:
+        print("pytest: not installed (needed for contributors)")
+    return 0
+
+
+_SUBCOMMANDS = "list show validate prompt score report run doctor completion"
+
+
+def cmd_completion(args: argparse.Namespace) -> int:
+    if args.shell == "bash":
+        print(f'complete -W "{_SUBCOMMANDS}" jpbench')
+    else:
+        print(f"#compdef jpbench\n_arguments '1: :({_SUBCOMMANDS})'")
     return 0
 
 
@@ -135,7 +183,6 @@ def cmd_report(args: argparse.Namespace) -> int:
     if not results:
         print("no tasks with gold answers", file=sys.stderr)
         return 1
-    summary = summarize(results, {t.id: t.difficulty for t in tasks})
     if args.format == "csv":
         import csv
         import io
@@ -147,14 +194,18 @@ def cmd_report(args: argparse.Namespace) -> int:
             writer.writerow([r.task_id, r.passed, f"{r.score:.4f}", r.detail])
         print(buf.getvalue(), end="")
         return 0
+    summary = summarize(results, {t.id: t.difficulty for t in tasks})
+    low, high = wilson_interval(summary["passed"], summary["total"])
+    category = {t.id: t.category for t in tasks}
+    kind = {t.id: t.success.type for t in tasks}
     lines = ["# JP-Bench report", "", "| task | result | score | detail |", "|---|---|---|---|"]
     for r in results:
         lines.append(f"| {r.task_id} | {'PASS' if r.passed else 'FAIL'} | {r.score:.2f} | {r.detail} |")
     lines += [
         "",
         (
-            f"Passed {summary['passed']}/{summary['total']} ({summary['pass_rate']:.1%}), "
-            f"mean score {summary['mean_score']:.3f}"
+            f"Passed {summary['passed']}/{summary['total']} ({summary['pass_rate']:.1%}, "
+            f"95% CI {low:.1%}-{high:.1%}), mean score {summary['mean_score']:.3f}"
         ),
         "",
         "| difficulty | passed | total |",
@@ -162,7 +213,26 @@ def cmd_report(args: argparse.Namespace) -> int:
     ]
     for diff, counts in sorted(summary["by_difficulty"].items()):
         lines.append(f"| {diff} | {counts['passed']} | {counts['total']} |")
-    print("\n".join(lines))
+    for title, key in (("category", category), ("success type", kind)):
+        lines += ["", f"| {title} | passed | total |", "|---|---|---|"]
+        groups: dict[str, list[bool]] = {}
+        for r in results:
+            groups.setdefault(key[r.task_id], []).append(r.passed)
+        for name, flags in sorted(groups.items()):
+            lines.append(f"| {name} | {sum(flags)} | {len(flags)} |")
+    safety = [r.task_id for r in results if "SAFETY" in r.detail]
+    if safety:
+        lines += ["", "## Safety violations", ""] + [f"- {tid}" for tid in safety]
+    text = "\n".join(lines) + "\n"
+    if args.output:
+        out = Path(args.output)
+        if out.exists() and not args.force:
+            print(f"{out} exists; pass --force to overwrite", file=sys.stderr)
+            return 1
+        out.write_text(text, encoding="utf-8")
+        print(f"wrote {out}")
+    else:
+        print(text, end="")
     return 0
 
 
@@ -203,7 +273,17 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="jpbench", description="JP-Bench: Japanese bureaucracy tasks for browser agents")
+    parser = argparse.ArgumentParser(
+        prog="jpbench",
+        description="JP-Bench: Japanese bureaucracy tasks for browser agents",
+        epilog=(
+            "examples:\n"
+            "  jpbench validate\n"
+            "  jpbench run --gold gold.json --out results.jsonl --dry-run\n"
+            "  jpbench report --pred preds.json --gold gold.json --output report.md\n"
+            "exit codes: 0 ok, 1 user error, 2 errors in run, 3 safety violation"
+        ),
+    )
     parser.add_argument("--tasks", help="task directory (default: bundled tasks/)")
     parser.add_argument("--version", action="version", version=f"jpbench {_version()}")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -218,13 +298,20 @@ def main(argv: list[str] | None = None) -> int:
     shp.add_argument("task_id")
     shp.add_argument("--json", action="store_true")
     shp.set_defaults(func=cmd_show)
-    sub.add_parser("validate", help="validate task files").set_defaults(func=cmd_validate)
+    vp = sub.add_parser("validate", help="validate task files")
+    vp.add_argument("--only", help="validate a single task file")
+    vp.set_defaults(func=cmd_validate)
 
     p = sub.add_parser("prompt", help="render a task as an agent prompt")
     p.add_argument("task_id")
     p.add_argument("--lang", choices=["en", "ja"], default="en")
     p.set_defaults(func=cmd_prompt)
 
+    dp = sub.add_parser("doctor", help="check Python, package, and task directory")
+    dp.set_defaults(func=cmd_doctor)
+    cp = sub.add_parser("completion", help="print a shell completion script")
+    cp.add_argument("shell", choices=["bash", "zsh"])
+    cp.set_defaults(func=cmd_completion)
     rn = sub.add_parser("run", help="run tasks through an adapter and write results")
     rn.add_argument("--adapter", choices=["echo", "replay"], default="echo")
     rn.add_argument("--replay")
@@ -240,6 +327,8 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--pred", required=True)
     r.add_argument("--gold", required=True)
     r.add_argument("--format", choices=["md", "csv"], default="md")
+    r.add_argument("--output")
+    r.add_argument("--force", action="store_true")
     r.set_defaults(func=cmd_report)
 
     s = sub.add_parser("score", help="score predictions against gold answers")
