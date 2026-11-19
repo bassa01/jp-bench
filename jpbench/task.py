@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import yaml
 
@@ -16,7 +17,9 @@ _ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 _JA_RE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff]")
 TAGS = {"corporate", "tax", "legal", "subsidy", "labor", "needs_login", "multi_page", "japanese_era", "full_width_input"}
 REVIEW_STATUSES = {"draft", "reviewed", "published"}
-OPTIONAL_KEYS = {"tags", "review_status", "created", "updated", "owner", "snapshot_date", "source_documents"}
+OPTIONAL_KEYS = {"tags", "review_status", "created", "updated", "owner", "snapshot_date", "source_documents", "max_steps", "timeout_seconds", "allowed_domains", "auth_method"}
+AUTH_METHODS = {"none", "idpw", "gbizid"}
+PERSONAL_PHONE_RE = re.compile(r"0[789]0-?\d{4}-?\d{4}")
 SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state"}
 
 REQUIRED_KEYS = {
@@ -78,6 +81,22 @@ class Task:
     owner: str = ""
     snapshot_date: str = ""
     source_documents: tuple[str, ...] = ()
+    max_steps: int = 0
+    timeout_seconds: int = 0
+    allowed_domains: tuple[str, ...] = ()
+    auth_method: str = ""
+
+    @property
+    def requires_login(self) -> bool:
+        return self.auth_required
+
+    @property
+    def is_form_fill(self) -> bool:
+        return self.category == "form_fill"
+
+    @property
+    def is_read_only(self) -> bool:
+        return self.category in {"lookup", "extract", "search"}
 
 
 def _require(cond: bool, task_id: str, msg: str) -> None:
@@ -161,6 +180,27 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     if raw["category"] == "form_fill":
         _require(stop, task_id, "form_fill tasks must set safety.stop_before_submit: true")
 
+    if raw["category"] == "form_fill":
+        _require(stype == "reached_state", task_id, "form_fill tasks must use the reached_state success rule")
+    if "max_steps" in raw:
+        _require(isinstance(raw["max_steps"], int) and 1 <= raw["max_steps"] <= 200, task_id, "max_steps must be an integer from 1 to 200")
+    if "timeout_seconds" in raw:
+        _require(isinstance(raw["timeout_seconds"], int) and 1 <= raw["timeout_seconds"] <= 1800, task_id, "timeout_seconds must be an integer from 1 to 1800")
+    allowed = [str(d) for d in (raw.get("allowed_domains") or [])]
+    for domain in allowed:
+        _require("/" not in domain and "://" not in domain and bool(domain), task_id, "allowed_domains entries must be bare host names")
+    if allowed:
+        host = urlsplit(url).hostname or ""
+        _require(host in allowed, task_id, "allowed_domains must include the portal host")
+    for key, value in raw["inputs"].items() if isinstance(raw["inputs"], dict) else []:
+        _require(isinstance(value, (str, int, float, bool, list)), task_id, f"inputs.{key} must be a scalar or list")
+        _require(not (isinstance(value, str) and PERSONAL_PHONE_RE.search(value)), task_id, f"inputs.{key} looks like a real mobile phone number")
+    auth_method = str(raw.get("auth_method", ""))
+    if auth_method:
+        _require(auth_method in AUTH_METHODS, task_id, f"auth_method must be one of {sorted(AUTH_METHODS)}")
+        _require(bool(safety.get("auth_required", False)), task_id, "auth_method requires safety.auth_required: true")
+    if bool(safety.get("auth_required", False)):
+        _require(bool(auth_method), task_id, "auth_required tasks must declare auth_method")
     created = _optional_date(raw, "created", task_id)
     updated = _optional_date(raw, "updated", task_id)
     _require(not (created and updated) or updated >= created, task_id, "updated must not be earlier than created")
@@ -192,6 +232,10 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
         owner=str(raw.get("owner", "")),
         snapshot_date=_optional_date(raw, "snapshot_date", task_id),
         source_documents=tuple(_optional_urls(raw, task_id)),
+        max_steps=int(raw.get("max_steps", 0)),
+        timeout_seconds=int(raw.get("timeout_seconds", 0)),
+        allowed_domains=tuple(allowed),
+        auth_method=auth_method,
     )
 
 

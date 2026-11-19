@@ -30,3 +30,4 @@ safety:
   auth_required: true
 gold_source: inputs are the gold; scorer checks entered values and that submitted == false
 tags: [labor]
+auth_method: gbizid
