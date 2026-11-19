@@ -110,6 +110,7 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     overlap = float(succ.get("min_overlap", 1.0))
     _require(0.0 <= overlap <= 1.0, task_id, "success.min_overlap must be within 0-1")
     _require(float(succ.get("tolerance", 0.0)) >= 0.0, task_id, "success.tolerance must not be negative")
+    _require(float(succ.get("tolerance", 0.0)) <= 0.5, task_id, "success.tolerance must be at most 0.5")
     _require("tolerance" not in succ or stype == "numeric_tolerance", task_id, "success.tolerance only applies to numeric_tolerance")
     _require("state" not in succ or stype == "reached_state", task_id, "success.state only applies to reached_state")
 
