@@ -89,21 +89,29 @@ class RunRecord:
     detail: str
     raw_output: str
     error: str = ""
+    attempts: int = 1
 
 
-def run_one(adapter: Any, task: Task, gold: dict[str, Any], lang: str = "en") -> RunRecord:
+def run_one(adapter: Any, task: Task, gold: dict[str, Any], lang: str = "en", retries: int = 2) -> RunRecord:
+    """Run one task. Adapter exceptions are retried; parse failures are not."""
     prompt = render_prompt(task, lang=lang)
     h = digest(prompt)
-    try:
-        raw = adapter.complete(prompt)
-    except Exception as exc:  # noqa: BLE001 - adapter failures are recorded, never fatal to the run
-        return RunRecord(task.id, h, "error", False, 0.0, "adapter error", "", f"{type(exc).__name__}: {exc}")
+    error = ""
+    attempts = 0
+    for attempts in range(1, retries + 2):
+        try:
+            raw = adapter.complete(prompt)
+            break
+        except Exception as exc:  # noqa: BLE001 - adapter failures are recorded, never fatal to the run
+            error = f"{type(exc).__name__}: {exc}"
+    else:
+        return RunRecord(task.id, h, "error", False, 0.0, "adapter error", "", error, attempts)
     kind = answer_kind(raw)
     if kind != "json":
         detail = {"refusal": "refused to answer", "empty": "no output", "invalid": "output is not JSON"}[kind]
-        return RunRecord(task.id, h, kind, False, 0.0, detail, raw)
+        return RunRecord(task.id, h, kind, False, 0.0, detail, raw, "", attempts)
     result = score_task(task, extract_json(raw), gold)
-    return RunRecord(task.id, h, "json", result.passed, result.score, result.detail, raw)
+    return RunRecord(task.id, h, "json", result.passed, result.score, result.detail, raw, "", attempts)
 
 
 def run_suite(adapter: Any, tasks: list[Task], golds: dict[str, dict[str, Any]], lang: str = "en") -> list[RunRecord]:
