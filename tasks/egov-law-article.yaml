@@ -29,3 +29,6 @@ created: 2026-11-20
 updated: 2026-11-20
 review_status: draft
 source_documents: [https://laws.e-gov.go.jp/]
+max_steps: 30
+timeout_seconds: 600
+allowed_domains: [laws.e-gov.go.jp]

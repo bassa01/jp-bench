@@ -29,3 +29,6 @@ created: 2026-11-20
 updated: 2026-11-20
 review_status: draft
 source_documents: [https://www.houjin-bangou.nta.go.jp/]
+max_steps: 30
+timeout_seconds: 600
+allowed_domains: [www.houjin-bangou.nta.go.jp]
