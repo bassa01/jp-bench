@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
 from pathlib import Path
 
 from .prompt import render_prompt
@@ -60,9 +61,17 @@ def cmd_score(args: argparse.Namespace) -> int:
     return 0
 
 
+def _version() -> str:
+    try:
+        return _pkg_version("jpbench")
+    except PackageNotFoundError:
+        return "0.0.0+unknown"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="jpbench", description="JP-Bench: Japanese bureaucracy tasks for browser agents")
     parser.add_argument("--tasks", help="task directory (default: bundled tasks/)")
+    parser.add_argument("--version", action="version", version=f"jpbench {_version()}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("list", help="list tasks").set_defaults(func=cmd_list)
