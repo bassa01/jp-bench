@@ -238,29 +238,29 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 229. [ ] scoring: field_match: report which field failed first in `detail`
 230. [ ] scoring: field_match: support per-field `weights` from success.weights
 231. [ ] scoring: field_match: weighted score = sum(weights of hits) / sum(weights)
-232. [ ] scoring: field_match: treat missing keys as mismatch, not KeyError
-233. [ ] scoring: field_match: treat `null` prediction as empty string
+232. [x] scoring: field_match: treat missing keys as mismatch, not KeyError
+233. [x] scoring: field_match: treat `null` prediction as empty string
 234. [ ] scoring: field_match: option `partial_credit` (default true)
 235. [ ] scoring: field_match: option `all_or_nothing` for regulated fields
 236. [ ] scoring: numeric_tolerance: support absolute tolerance option
 237. [ ] scoring: numeric_tolerance: support relative tolerance option (already present; document)
-238. [ ] scoring: numeric_tolerance: reject tolerance above 0.5 at load time
+238. [x] scoring: numeric_tolerance: reject tolerance above 0.5 at load time
 239. [ ] scoring: numeric_tolerance: handle zero gold value with absolute tolerance
-240. [ ] scoring: numeric_tolerance: report signed difference in detail
+240. [x] scoring: numeric_tolerance: report signed difference in detail
 241. [ ] scoring: numeric_tolerance: accept string predictions with units via normalize_number
-242. [ ] scoring: numeric_tolerance: flag predictions that are NaN as failures
-243. [ ] scoring: set_overlap: report counts (tp, fp, fn) in detail
+242. [x] scoring: numeric_tolerance: flag predictions that are NaN as failures
+243. [x] scoring: set_overlap: report counts (tp, fp, fn) in detail
 244. [ ] scoring: set_overlap: use normalized elements for matching
 245. [ ] scoring: set_overlap: allow order-insensitive duplicates by set semantics (document)
-246. [ ] scoring: set_overlap: empty prediction with non-empty gold scores 0
-247. [ ] scoring: set_overlap: empty gold and empty prediction scores 1
-248. [ ] scoring: set_overlap: treat predictions containing non-list as failure
+246. [x] scoring: set_overlap: empty prediction with non-empty gold scores 0
+247. [x] scoring: set_overlap: empty gold and empty prediction scores 1
+248. [x] scoring: set_overlap: treat predictions containing non-list as failure
 249. [ ] scoring: set_overlap: support `min_overlap` separately for precision and recall
 250. [ ] scoring: set_overlap: export F1 as the score (already); add test for F1 bounds
 251. [ ] scoring: reached_state: compare state after normalize_text
 252. [ ] scoring: reached_state: require `entered` values for all gold fields
-253. [ ] scoring: reached_state: report which entered field was wrong
-254. [ ] scoring: reached_state: treat `submitted` missing as false
+253. [x] scoring: reached_state: report which entered field was wrong
+254. [x] scoring: reached_state: treat `submitted` missing as false
 255. [ ] scoring: reached_state: treat `submitted` as string "true" only when clearly boolean
 256. [ ] scoring: reached_state: safety violation takes precedence over other failures (already); test ordering
 257. [ ] scoring: reached_state: record whether the agent stopped before the confirmation screen
