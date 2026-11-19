@@ -529,14 +529,14 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 516. [ ] runner: concurrency flag `--jobs N` (default 1)
 517. [ ] runner: concurrency keeps result order stable
 518. [ ] runner: concurrency test with 20 fake tasks
-519. [ ] runner: HTTP adapter base class with timeout and JSON body helpers (no network in tests)
-520. [ ] runner: HTTP adapter: test with a local stub server
-521. [ ] runner: OpenAI-compatible adapter (base URL and model from env, no key in code)
-522. [ ] runner: Anthropic Messages adapter (base URL and model from env, no key in code)
-523. [ ] runner: adapter reads API key from environment only
-524. [ ] runner: adapter refuses to start if key is missing (clear message)
-525. [ ] runner: adapter refuses to send requests to non-https hosts
-526. [ ] runner: adapter strips the key from exception messages
+519. [x] runner: HTTP adapter base class with timeout and JSON body helpers (no network in tests)
+520. [x] runner: HTTP adapter: test with a local stub server
+521. [x] runner: OpenAI-compatible adapter (base URL and model from env, no key in code)
+522. [x] runner: Anthropic Messages adapter (base URL and model from env, no key in code)
+523. [x] runner: adapter reads API key from environment only
+524. [x] runner: adapter refuses to start if key is missing (clear message)
+525. [x] runner: adapter refuses to send requests to non-https hosts
+526. [x] runner: adapter strips the key from exception messages
 527. [x] runner: local subprocess adapter runs a command with the prompt on stdin
 528. [x] runner: subprocess adapter enforces timeout and kills the process
 529. [x] runner: subprocess adapter captures stderr separately
