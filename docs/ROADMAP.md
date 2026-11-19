@@ -7,20 +7,20 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 2. [x] task: surface YAML parse errors with file name and line number
 3. [x] schema: require task ids to be lowercase kebab-case
 4. [ ] schema: require file name to equal task id (already enforced; add test for mismatch message)
-5. [ ] schema: reject unknown top-level keys with a clear list
+5. [x] schema: reject unknown top-level keys with a clear list
 6. [ ] schema: reject unknown keys inside `safety`
 7. [ ] schema: reject unknown keys inside `portal`
 8. [ ] schema: require `portal.url` host to end in `.go.jp` or `.or.jp` for official portals
-9. [ ] schema: require `gold_source` to be non-empty
-10. [ ] schema: require `title_ja` to contain at least one Japanese character
-11. [ ] schema: require `instructions_ja` to contain at least one Japanese character
-12. [ ] schema: require `instructions_en` to contain no Japanese characters
+9. [x] schema: require `gold_source` to be non-empty
+10. [x] schema: require `title_ja` to contain at least one Japanese character
+11. [x] schema: require `instructions_ja` to contain at least one Japanese character
+12. [x] schema: require `instructions_en` to contain no Japanese characters
 13. [ ] schema: reject empty `inputs` for tasks whose category is `lookup`
-14. [ ] schema: require `success.fields` to be unique
-15. [ ] schema: reject `min_overlap` outside 0–1
-16. [ ] schema: reject negative `tolerance`
-17. [ ] schema: require `tolerance` only for `numeric_tolerance`
-18. [ ] schema: require `state` only for `reached_state`
+14. [x] schema: require `success.fields` to be unique
+15. [x] schema: reject `min_overlap` outside 0–1
+16. [x] schema: reject negative `tolerance`
+17. [x] schema: require `tolerance` only for `numeric_tolerance`
+18. [x] schema: require `state` only for `reached_state`
 19. [ ] schema: require `fields` to reference keys that exist in gold answers
 20. [ ] loader: expose `load_task_ids` without parsing bodies
 21. [ ] loader: cache parsed tasks per directory for one run
@@ -107,10 +107,10 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 ## P2. Normalization (101–220)
 101. [x] normalize: strip zero-width characters
 102. [x] normalize: unify wave dash and tilde variants
-103. [ ] normalize: map full-width colon `：` and semicolon `；` to ASCII
-104. [ ] normalize: map full-width parentheses to ASCII
-105. [ ] normalize: map full-width percent `％` to ASCII
-106. [ ] normalize: map full-width hyphen-minus `－` to ASCII (already via dash table; add test)
+103. [x] normalize: map full-width colon `：` and semicolon `；` to ASCII
+104. [x] normalize: map full-width parentheses to ASCII
+105. [x] normalize: map full-width percent `％` to ASCII
+106. [x] normalize: map full-width hyphen-minus `－` to ASCII (already via dash table; add test)
 107. [ ] normalize: map `ー` (katakana long vowel) variants `｜` and `―` consistently
 108. [ ] normalize: map ideographic full stop `。` and `．` to one form for comparison
 109. [ ] normalize: map `・` (middle dot) variants `･` and `·`
@@ -233,7 +233,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 224. [x] scoring: treat empty model output as no prediction
 225. [ ] scoring: return a per-field breakdown dict on TaskResult
 226. [ ] scoring: add `details` field (list of per-field results) to TaskResult
-227. [ ] scoring: make TaskResult JSON-serialisable via `to_dict`
+227. [x] scoring: make TaskResult JSON-serialisable via `to_dict`
 228. [ ] scoring: add `confidence` float to TaskResult (default 1.0)
 229. [ ] scoring: field_match: report which field failed first in `detail`
 230. [ ] scoring: field_match: support per-field `weights` from success.weights
@@ -618,11 +618,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 603. [x] cli: add `list --category` and `list --difficulty` filters
 604. [x] cli: add `report` subcommand with per-difficulty summary
 605. [x] cli: add `report --format csv`
-606. [ ] cli: add `list --json` output
+606. [x] cli: add `list --json` output
 607. [ ] cli: add `list --tag <tag>` filter (depends on task tags, item 40)
 608. [ ] cli: add `list --sort id|difficulty|category`
 609. [ ] cli: add `list --columns` to choose output columns
-610. [ ] cli: add `show --json`
+610. [x] cli: add `show --json`
 611. [ ] cli: add `show --prompt` shortcut that renders the English prompt
 612. [ ] cli: add `show --gold-source` to print the gold source line
 613. [ ] cli: add `validate --fix-hints` to print suggested fixes
