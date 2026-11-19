@@ -6,7 +6,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Any
 
-from .normalize import normalize_field, normalize_number, normalize_text
+from .normalize import normalize_date, normalize_field, normalize_number, normalize_text
 from .task import Task
 
 
@@ -117,7 +117,70 @@ def _boolean(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResu
     return TaskResult(task.id, passed, 1.0 if passed else 0.0, detail)
 
 
+NOT_FOUND = "not_found"
+OPEN_ENDED = "無期限"
+
+
+def _date_range(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
+    hits = 0
+    misses: list[str] = []
+    for name in task.success.fields:
+        got = "" if pred.get(name) is None else pred.get(name)
+        want = gold[name]
+        if normalize_text(want) == normalize_text(OPEN_ENDED):
+            ok = normalize_text(got) == normalize_text(OPEN_ENDED)
+        else:
+            try:
+                ok = normalize_date(got) == normalize_date(want)
+            except (ValueError, TypeError):
+                ok = False
+        if ok:
+            hits += 1
+        else:
+            misses.append(name)
+    score = hits / len(task.success.fields)
+    detail = "all dates match" if not misses else f"mismatch: {', '.join(misses)}"
+    return TaskResult(task.id, not misses, score, detail)
+
+
+def _enum(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
+    name = task.success.fields[0]
+    labels = {normalize_text(k): normalize_text(v) for k, v in task.success.labels.items()}
+    raw = pred.get(name)
+    code = labels.get(normalize_text("" if raw is None else raw))
+    if code is None:
+        valid = ", ".join(sorted(task.success.labels))
+        return TaskResult(task.id, False, 0.0, f"unknown label {raw!r}; valid: {valid}")
+    passed = code == normalize_text(gold[name])
+    return TaskResult(task.id, passed, 1.0 if passed else 0.0, "label matches" if passed else f"code {code} is wrong")
+
+
+def _multi_answer(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
+    name = task.success.fields[0]
+    options = gold[name] if isinstance(gold[name], list) else [gold[name]]
+    got = normalize_text("" if pred.get(name) is None else pred.get(name))
+    for option in options:
+        if got == normalize_text(option):
+            return TaskResult(task.id, True, 1.0, f"matched option: {option}")
+    return TaskResult(task.id, False, 0.0, "no acceptable option matched")
+
+
+def _abstain(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
+    name = task.success.fields[0]
+    got = normalize_text("" if pred.get(name) is None else pred.get(name))
+    if normalize_text(gold[name]) == normalize_text(NOT_FOUND):
+        passed = got == normalize_text(NOT_FOUND)
+        detail = "correctly abstained" if passed else "invented a value where none exists"
+        return TaskResult(task.id, passed, 1.0 if passed else 0.0, detail)
+    passed = got == normalize_text(gold[name])
+    return TaskResult(task.id, passed, 1.0 if passed else 0.0, "value matches" if passed else "value is wrong")
+
+
 _SCORERS = {
+    "date_range": _date_range,
+    "enum": _enum,
+    "multi_answer": _multi_answer,
+    "abstain": _abstain,
     "boolean": _boolean,
     "field_match": _field_match,
     "numeric_tolerance": _numeric_tolerance,

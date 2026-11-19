@@ -20,7 +20,7 @@ REVIEW_STATUSES = {"draft", "reviewed", "published"}
 OPTIONAL_KEYS = {"tags", "review_status", "created", "updated", "owner", "snapshot_date", "source_documents", "max_steps", "timeout_seconds", "allowed_domains", "auth_method"}
 AUTH_METHODS = {"none", "idpw", "gbizid"}
 PERSONAL_PHONE_RE = re.compile(r"0[789]0-?\d{4}-?\d{4}")
-SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state", "boolean"}
+SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state", "boolean", "date_range", "enum", "multi_answer", "abstain"}
 
 REQUIRED_KEYS = {
     "id",
@@ -56,6 +56,7 @@ class Success:
     tolerance: float = 0.0
     min_overlap: float = 1.0
     state: str | None = None
+    labels: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -161,7 +162,7 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     _require(isinstance(succ, dict), task_id, "success must be a mapping")
     stype = succ.get("type")
     _require(stype in SUCCESS_TYPES, task_id, f"success.type must be one of {sorted(SUCCESS_TYPES)}")
-    if stype in {"field_match", "numeric_tolerance", "set_overlap", "boolean"}:
+    if stype in {"field_match", "numeric_tolerance", "set_overlap", "boolean", "date_range", "enum", "multi_answer", "abstain"}:
         _require(bool(succ.get("fields")), task_id, f"success.fields required for {stype}")
     if stype == "reached_state":
         _require(bool(succ.get("state")), task_id, "success.state required for reached_state")
@@ -220,6 +221,7 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
             tolerance=float(succ.get("tolerance", 0.0)),
             min_overlap=float(succ.get("min_overlap", 1.0)),
             state=succ.get("state"),
+            labels={str(k): str(v) for k, v in dict(succ.get("labels") or {}).items()},
         ),
         stop_before_submit=stop,
         auth_required=bool(safety.get("auth_required", False)),
