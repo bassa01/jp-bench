@@ -502,8 +502,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 489. [x] runner: add `--dry-run` that renders prompts and skips adapters
 490. [x] runner: add `--limit N` to run only the first N tasks
 491. [x] runner: add `--seed` for deterministic task order
-492. [ ] runner: add `--repeat K` to run each task K times
-493. [ ] runner: compute pass@1 and pass@K when repeat > 1
+492. [x] runner: add `--repeat K` to run each task K times
+493. [x] runner: compute pass@1 and pass@K when repeat > 1
 494. [x] runner: write results as JSON Lines to `results/<run-id>.jsonl`
 495. [x] runner: run id derived from timestamp and adapter name
 496. [x] runner: write run metadata file alongside results
@@ -526,9 +526,9 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 513. [ ] runner: back off exponentially with jitter (seeded in tests)
 514. [ ] runner: cap total retry time per task
 515. [x] runner: record retry count per task
-516. [ ] runner: concurrency flag `--jobs N` (default 1)
-517. [ ] runner: concurrency keeps result order stable
-518. [ ] runner: concurrency test with 20 fake tasks
+516. [x] runner: concurrency flag `--jobs N` (default 1)
+517. [x] runner: concurrency keeps result order stable
+518. [x] runner: concurrency test with 20 fake tasks
 519. [x] runner: HTTP adapter base class with timeout and JSON body helpers (no network in tests)
 520. [x] runner: HTTP adapter: test with a local stub server
 521. [x] runner: OpenAI-compatible adapter (base URL and model from env, no key in code)
