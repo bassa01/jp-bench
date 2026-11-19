@@ -132,15 +132,15 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 125. [ ] normalize: map `有限責任` prefix variants
 126. [ ] normalize: strip `本店` and `支店` suffixes for name fields when `strip_branch` is on
 127. [ ] normalize: map `代表取締役` titles out of name fields
-128. [ ] normalize: map kanji numerals `一二三` to digits in address blocks (`一丁目`→`1丁目`)
-129. [ ] normalize: map `丁目` and `-` variants in address fields
+128. [x] normalize: map kanji numerals `一二三` to digits in address blocks (`一丁目`→`1丁目`)
+129. [x] normalize: map `丁目` and `-` variants in address fields
 130. [ ] normalize: map `番地` and `番` variants
 131. [ ] normalize: map `号` and `号室` variants in address fields
-132. [ ] normalize: map prefecture omission (`東京`→`東京都`) for address fields
+132. [x] normalize: map prefecture omission (`東京`→`東京都`) for address fields
 133. [ ] normalize: map `北海道` (no 府/県/都 suffix) correctly
-134. [ ] normalize: map `京都府` and `大阪府` variants `京都` and `大阪`
+134. [x] normalize: map `京都府` and `大阪府` variants `京都` and `大阪`
 135. [ ] normalize: map 政令指定都市 wards (`千代田区`) with and without city name
-136. [ ] normalize: strip `〒` and postal code from address fields
+136. [x] normalize: strip `〒` and postal code from address fields
 137. [x] normalize: date: accept `R9.4.1` abbreviation for 令和
 138. [x] normalize: date: accept `H31.4.30` abbreviation for 平成
 139. [x] normalize: date: accept `S64.1.7` abbreviation for 昭和
@@ -151,8 +151,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 144. [ ] normalize: date: accept two-digit years only with `allow_short_year` flag
 145. [x] normalize: date: reject impossible dates (2027-02-30)
 146. [x] normalize: date: handle leap years (2028-02-29 valid, 2027-02-29 invalid)
-147. [ ] normalize: date: accept `YYYY年MM月DD日` with leading zeros
-148. [ ] normalize: date: accept `YYYY年M月D日` without leading zeros
+147. [x] normalize: date: accept `YYYY年MM月DD日` with leading zeros
+148. [x] normalize: date: accept `YYYY年M月D日` without leading zeros
 149. [ ] normalize: date: normalize time-of-day suffix (`午前`/`午後`) out of date fields
 150. [ ] normalize: date: return `None` for empty values instead of `""`
 151. [x] normalize: number: accept `¥` and `￥` prefixes
@@ -164,7 +164,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 157. [x] normalize: number: reject NaN and infinity
 158. [ ] normalize: number: return `Decimal` option for money fields
 159. [ ] normalize: number: round money to whole yen when `integer_yen` is on
-160. [ ] normalize: number: accept `約`, `およそ` prefix and mark as approximate
+160. [x] normalize: number: accept `約`, `およそ` prefix and mark as approximate
 161. [ ] normalize: number: accept `以上`, `以下` and keep bound direction
 162. [ ] normalize: number: accept ranges `100〜200` and return (low, high)
 163. [x] normalize: number: accept `無料` as 0
@@ -173,13 +173,13 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 166. [x] normalize: invoice number (T+13) uppercase `T` and strip spaces
 167. [x] normalize: invoice number accept lowercase `t` prefix
 168. [x] normalize: invoice number reject non-digit body
-169. [ ] normalize: law number (`令和元年法律第一号`) to canonical form
-170. [ ] normalize: law number accept `法律第1号` without era
+169. [x] normalize: law number (`令和元年法律第一号`) to canonical form
+170. [x] normalize: law number accept `法律第1号` without era
 171. [ ] normalize: law number accept `政令第` and `省令第` kinds
 172. [ ] normalize: article reference: `第3条第1項第2号` canonical ordering
-173. [ ] normalize: article reference: accept `第三条` (kanji numerals)
-174. [ ] normalize: article reference: accept `3条` without 第
-175. [ ] normalize: article reference: `第3条の2の3` multi-level suffix
+173. [x] normalize: article reference: accept `第三条` (kanji numerals)
+174. [x] normalize: article reference: accept `3条` without 第
+175. [x] normalize: article reference: `第3条の2の3` multi-level suffix
 176. [ ] normalize: article reference: `附則第3条` supplementary provisions
 177. [ ] normalize: article reference: `第3条ただし書` proviso
 178. [ ] normalize: article reference: `第3条各号` list reference
