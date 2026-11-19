@@ -386,7 +386,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 375. [x] prompt: add `--lang` option to `prompt` command (exists; add test for ja output)
 376. [ ] prompt: add system prompt slot in template
 377. [x] prompt: add a stricter output-format footer for JSON-only answers
-378. [ ] prompt: add explicit instruction to stop before submit on form tasks (already present; test it)
+378. [x] prompt: add explicit instruction to stop before submit on form tasks (already present; test it)
 379. [ ] prompt: include today's date placeholder for deadline questions
 380. [ ] prompt: include the portal's operating hours note when relevant
 381. [x] prompt: escape `{` and `}` in inputs so JSON dumps cannot break templates
@@ -441,15 +441,15 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 430. [ ] parse: docs: examples of accepted and rejected outputs
 431. [ ] prompt+parse: round-trip test (render, fake answer, parse, score) for each task
 432. [ ] prompt+parse: golden outputs for 5 tasks in both languages
-433. [ ] prompt+parse: check that every task's expected JSON keys appear in the prompt
+433. [x] prompt+parse: check that every task's expected JSON keys appear in the prompt
 434. [ ] prompt+parse: check that prompts never leak gold answers (test with gold values)
 435. [ ] prompt+parse: check that prompts never include `gold_source` URLs with API keys
-436. [ ] prompt+parse: check that inputs in prompt match task inputs exactly
+436. [x] prompt+parse: check that inputs in prompt match task inputs exactly
 437. [ ] prompt+parse: check for accidental Japanese in English prompts (allowlist for names)
-438. [ ] prompt+parse: check for accidental English in Japanese prompts (allowlist)
-439. [ ] prompt+parse: check prompt length for every task under the limit
-440. [ ] prompt+parse: check that every task has both languages non-empty
-441. [ ] prompt+parse: check output format line matches success type
+438. [x] prompt+parse: check for accidental English in Japanese prompts (allowlist)
+439. [x] prompt+parse: check prompt length for every task under the limit
+440. [x] prompt+parse: check that every task has both languages non-empty
+441. [x] prompt+parse: check output format line matches success type
 442. [ ] prompt+parse: reached_state tasks get the entered/state format line
 443. [ ] prompt+parse: field_match tasks get a keyed JSON line
 444. [ ] prompt+parse: set_overlap tasks get an array format line
@@ -850,11 +850,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 833. [ ] task content: family README lists known limitations
 834. [ ] task content: family README lists tasks by difficulty
 835. [ ] task content: family README links to the scoring rule used
-836. [ ] task content: ensure no task requires paid services
+836. [x] task content: ensure no task requires paid services
 837. [ ] task content: ensure no task requires an account the benchmark cannot provide
-838. [ ] task content: ensure no task needs CAPTCHA solving (skip and document)
-839. [ ] task content: ensure no task asks the agent to bypass login
-840. [ ] task content: ensure every task that needs login says so in `auth_method`
+838. [x] task content: ensure no task needs CAPTCHA solving (skip and document)
+839. [x] task content: ensure no task asks the agent to bypass login
+840. [x] task content: ensure every task that needs login says so in `auth_method`
 841. [ ] task content: reading-order check: instructions match the portal's actual screen order
 842. [ ] task content: link check: portal URLs resolve (manual, recorded)
 843. [ ] task content: link check: flag URLs that redirect to a different host
@@ -893,8 +893,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 874. [x] tests: property tests with hypothesis for set_overlap bounds
 875. [x] tests: property tests with hypothesis for numeric_tolerance symmetry
 876. [ ] tests: test that every normalize rule has at least one golden case
-877. [ ] tests: test that every success type has a sample passing answer
-878. [ ] tests: test that every success type has a sample failing answer
+877. [x] tests: test that every success type has a sample passing answer
+878. [x] tests: test that every success type has a sample failing answer
 879. [ ] tests: test that docs code blocks run (doctest-style)
 880. [ ] tests: test that README commands still work
 881. [ ] tests: test on Windows-style newlines in task YAML
