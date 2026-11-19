@@ -31,6 +31,8 @@ _ENTITY_ABBREVIATIONS = {
     "（一社）": "一般社団法人",
     "(一財)": "一般財団法人",
     "（一財）": "一般財団法人",
+    "(NPO)": "特定非営利活動法人",
+    "（NPO）": "特定非営利活動法人",
     "・": "・",
     "･": "・",
     "·": "・",
@@ -191,6 +193,7 @@ def normalize_address(value: object) -> str:
     text = unicodedata.normalize("NFKC", str(value)).strip()
     text = re.sub(r"^〒?\s*\d{3}-?\d{4}\s*", "", text)
     text = _kanji_numerals_to_digits(text, "丁目")
+    text = text.replace("番地", "番")
     for short, full in _PREFECTURE_SHORT_FORMS:
         text = re.sub(rf"^{short}(?![都道府県市区町村郡])", full, text, count=1)
     return text
@@ -242,6 +245,22 @@ def fold_kana(text: str) -> str:
     return "".join(chr(ord(c) + 0x60) if "ぁ" <= c <= "ゖ" else c for c in text)
 
 
+_BOOL_TRUE = {"true", "yes", "はい", "有", "有効", "あり"}
+_BOOL_FALSE = {"false", "no", "いいえ", "無", "無効", "なし"}
+
+
+def normalize_boolean(value: object) -> str:
+    """'true' or 'false' for yes/no answers in Japanese or English; unknown values are returned as text."""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    text = normalize_text("" if value is None else value).lower()
+    if text in {normalize_text(w).lower() for w in _BOOL_TRUE}:
+        return "true"
+    if text in {normalize_text(w).lower() for w in _BOOL_FALSE}:
+        return "false"
+    return text
+
+
 def normalize_field(name: str, value: object) -> str:
     if name.endswith("_date") or name == "date":
         return normalize_date(value)
@@ -259,6 +278,8 @@ def normalize_field(name: str, value: object) -> str:
         return normalize_invoice_number(value)
     if name.endswith("_list"):
         return normalize_list(value)
+    if name.endswith("_flag"):
+        return normalize_boolean(value)
     if name.endswith("postal_code"):
         return normalize_postal_code(value)
     if name.endswith("phone"):
