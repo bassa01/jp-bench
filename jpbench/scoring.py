@@ -86,7 +86,7 @@ _SCORERS = {
 
 
 def score_task(task: Task, pred: dict[str, Any] | None, gold: dict[str, Any]) -> TaskResult:
-    if pred is None:
+    if not pred:
         return TaskResult(task.id, False, 0.0, "no prediction")
     scorer = _SCORERS.get(task.success.type)
     if scorer is None:
