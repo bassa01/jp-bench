@@ -497,8 +497,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 484. [ ] runner: timeouts produce a TIMEOUT result, not an exception
 485. [ ] runner: add `max_steps` to the adapter call metadata
 486. [ ] runner: add token counting hook (no provider lookup)
-487. [ ] runner: add cost estimation hook using a price table file
-488. [ ] runner: price table file is validated at load
+487. [x] runner: add cost estimation hook using a price table file
+488. [x] runner: price table file is validated at load
 489. [x] runner: add `--dry-run` that renders prompts and skips adapters
 490. [x] runner: add `--limit N` to run only the first N tasks
 491. [x] runner: add `--seed` for deterministic task order
@@ -537,10 +537,10 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 524. [ ] runner: adapter refuses to start if key is missing (clear message)
 525. [ ] runner: adapter refuses to send requests to non-https hosts
 526. [ ] runner: adapter strips the key from exception messages
-527. [ ] runner: local subprocess adapter runs a command with the prompt on stdin
-528. [ ] runner: subprocess adapter enforces timeout and kills the process
-529. [ ] runner: subprocess adapter captures stderr separately
-530. [ ] runner: subprocess adapter rejects commands that are not on an allowlist
+527. [x] runner: local subprocess adapter runs a command with the prompt on stdin
+528. [x] runner: subprocess adapter enforces timeout and kills the process
+529. [x] runner: subprocess adapter captures stderr separately
+530. [x] runner: subprocess adapter rejects commands that are not on an allowlist
 531. [ ] runner: browser agent adapter stub (interface only, documented)
 532. [ ] runner: browser agent adapter records each navigation as a step
 533. [ ] runner: browser agent adapter records screenshots path per step (no image upload)
@@ -584,8 +584,8 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 571. [ ] runner: test concurrency with failing tasks
 572. [ ] runner: test timeout with a sleeping subprocess
 573. [ ] runner: test retry counts with a flaky fake adapter
-574. [ ] runner: test cost estimation with a fixed price table
-575. [ ] runner: test price table validation errors
+574. [x] runner: test cost estimation with a fixed price table
+575. [x] runner: test price table validation errors
 576. [ ] runner: test dry-run makes zero adapter calls
 577. [ ] runner: test replay fails on missing hash
 578. [ ] runner: test replay produces identical scores to the original run
