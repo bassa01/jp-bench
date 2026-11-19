@@ -113,7 +113,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 106. [x] normalize: map full-width hyphen-minus `－` to ASCII (already via dash table; add test)
 107. [ ] normalize: map `ー` (katakana long vowel) variants `｜` and `―` consistently
 108. [ ] normalize: map ideographic full stop `。` and `．` to one form for comparison
-109. [ ] normalize: map `・` (middle dot) variants `･` and `·`
+109. [x] normalize: map `・` (middle dot) variants `･` and `·`
 110. [ ] normalize: map `ヶ` and `ケ` only when option `kana_fold` is on
 111. [x] normalize: optional hiragana/katakana folding for comparison (`kana_fold`)
 112. [x] normalize: map small kana (ぁぃぅぇぉ) to large forms when `kana_fold` is on
@@ -155,24 +155,24 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 148. [ ] normalize: date: accept `YYYY年M月D日` without leading zeros
 149. [ ] normalize: date: normalize time-of-day suffix (`午前`/`午後`) out of date fields
 150. [ ] normalize: date: return `None` for empty values instead of `""`
-151. [ ] normalize: number: accept `¥` and `￥` prefixes
-152. [ ] normalize: number: accept `円`, `万円`, `億円` (scale 1e4, 1e8)
+151. [x] normalize: number: accept `¥` and `￥` prefixes
+152. [x] normalize: number: accept `円`, `万円`, `億円` (scale 1e4, 1e8)
 153. [ ] normalize: number: reject mixed scale without explicit unit
-154. [ ] normalize: number: accept full-width comma `，` as separator
+154. [x] normalize: number: accept full-width comma `，` as separator
 155. [ ] normalize: number: accept `％` suffix as value/100 for ratio fields
 156. [ ] normalize: number: accept `千` (thousand) with kanji numerals for small values
-157. [ ] normalize: number: reject NaN and infinity
+157. [x] normalize: number: reject NaN and infinity
 158. [ ] normalize: number: return `Decimal` option for money fields
 159. [ ] normalize: number: round money to whole yen when `integer_yen` is on
 160. [ ] normalize: number: accept `約`, `およそ` prefix and mark as approximate
 161. [ ] normalize: number: accept `以上`, `以下` and keep bound direction
 162. [ ] normalize: number: accept ranges `100〜200` and return (low, high)
-163. [ ] normalize: number: accept `無料` as 0
+163. [x] normalize: number: accept `無料` as 0
 164. [ ] normalize: number: accept `なし` as 0 for count fields only
-165. [ ] normalize: legal number (法人番号) strip spaces and hyphens
-166. [ ] normalize: invoice number (T+13) uppercase `T` and strip spaces
-167. [ ] normalize: invoice number accept lowercase `t` prefix
-168. [ ] normalize: invoice number reject non-digit body
+165. [x] normalize: legal number (法人番号) strip spaces and hyphens
+166. [x] normalize: invoice number (T+13) uppercase `T` and strip spaces
+167. [x] normalize: invoice number accept lowercase `t` prefix
+168. [x] normalize: invoice number reject non-digit body
 169. [ ] normalize: law number (`令和元年法律第一号`) to canonical form
 170. [ ] normalize: law number accept `法律第1号` without era
 171. [ ] normalize: law number accept `政令第` and `省令第` kinds
@@ -183,17 +183,17 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 176. [ ] normalize: article reference: `附則第3条` supplementary provisions
 177. [ ] normalize: article reference: `第3条ただし書` proviso
 178. [ ] normalize: article reference: `第3条各号` list reference
-179. [ ] normalize: URL: remove `utm_*` query parameters
-180. [ ] normalize: URL: sort query parameters
-181. [ ] normalize: URL: decode percent-encoded Japanese in path
-182. [ ] normalize: URL: map `http` to `https` for `.go.jp` hosts
-183. [ ] normalize: URL: strip default ports `:443`
-184. [ ] normalize: URL: strip `www.` prefix for comparison
-185. [ ] normalize: list fields: normalize each element then sort
+179. [x] normalize: URL: remove `utm_*` query parameters
+180. [x] normalize: URL: sort query parameters
+181. [x] normalize: URL: decode percent-encoded Japanese in path
+182. [x] normalize: URL: map `http` to `https` for `.go.jp` hosts
+183. [x] normalize: URL: strip default ports `:443`
+184. [x] normalize: URL: strip `www.` prefix for comparison
+185. [x] normalize: list fields: normalize each element then sort
 186. [x] normalize: list fields: drop empty elements
 187. [x] normalize: list fields: dedupe after normalization
-188. [x] normalize: boolean fields: accept `はい`/`いいえ`, `有効`/`無効`, `true`/`false`
-189. [x] normalize: boolean fields: map `有` and `無` for existence questions
+188. [ ] normalize: boolean fields: accept `はい`/`いいえ`, `有効`/`無効`, `true`/`false`
+189. [ ] normalize: boolean fields: map `有` and `無` for existence questions
 190. [ ] normalize: enum fields: accept Japanese labels and map to codes
 191. [ ] normalize: enum fields: fail on unknown labels with the list of valid ones
 192. [ ] normalize: text fields: collapse repeated punctuation (`。。` → `。`)
