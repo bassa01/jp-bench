@@ -541,21 +541,21 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 528. [x] runner: subprocess adapter enforces timeout and kills the process
 529. [x] runner: subprocess adapter captures stderr separately
 530. [x] runner: subprocess adapter rejects commands that are not on an allowlist
-531. [ ] runner: browser agent adapter stub (interface only, documented)
-532. [ ] runner: browser agent adapter records each navigation as a step
-533. [ ] runner: browser agent adapter records screenshots path per step (no image upload)
-534. [ ] runner: browser agent adapter enforces `allowed_domains`
-535. [ ] runner: browser agent adapter blocks navigation outside `allowed_domains`
-536. [ ] runner: browser agent adapter stops at `max_steps`
-537. [ ] runner: browser agent adapter stops at the confirmation screen for form tasks
-538. [ ] runner: trace file per task (JSON Lines of steps)
-539. [ ] runner: trace file never contains entered personal data (redaction hook)
-540. [ ] runner: trace file size cap per task
-541. [ ] runner: summarize traces into per-step counts
-542. [ ] runner: test tracing with a scripted fake browser adapter
-543. [ ] runner: test that browser adapter respects allowed_domains
-544. [ ] runner: test that browser adapter respects max_steps
-545. [ ] runner: test that browser adapter stops before submit
+531. [x] runner: browser agent adapter stub (interface only, documented)
+532. [x] runner: browser agent adapter records each navigation as a step
+533. [x] runner: browser agent adapter records screenshots path per step (no image upload)
+534. [x] runner: browser agent adapter enforces `allowed_domains`
+535. [x] runner: browser agent adapter blocks navigation outside `allowed_domains`
+536. [x] runner: browser agent adapter stops at `max_steps`
+537. [x] runner: browser agent adapter stops at the confirmation screen for form tasks
+538. [x] runner: trace file per task (JSON Lines of steps)
+539. [x] runner: trace file never contains entered personal data (redaction hook)
+540. [x] runner: trace file size cap per task
+541. [x] runner: summarize traces into per-step counts
+542. [x] runner: test tracing with a scripted fake browser adapter
+543. [x] runner: test that browser adapter respects allowed_domains
+544. [x] runner: test that browser adapter respects max_steps
+545. [x] runner: test that browser adapter stops before submit
 546. [ ] runner: docs: how to write a new adapter
 547. [ ] runner: docs: adapter contract and error types
 548. [ ] runner: docs: how replay works for offline reproduction
