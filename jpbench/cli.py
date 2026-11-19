@@ -22,8 +22,30 @@ def _load(path: str | None):
 
 def cmd_list(args: argparse.Namespace) -> int:
     for t in _load(args.tasks):
+        if args.category and t.category != args.category:
+            continue
+        if args.difficulty and t.difficulty != args.difficulty:
+            continue
         lock = " [stop-before-submit]" if t.stop_before_submit else ""
         print(f"{t.id:32} {t.difficulty:6} {t.category:9} {t.title_ja}{lock}")
+    return 0
+
+
+def cmd_show(args: argparse.Namespace) -> int:
+    tasks = {t.id: t for t in _load(args.tasks)}
+    if args.task_id not in tasks:
+        print(f"unknown task: {args.task_id}", file=sys.stderr)
+        return 1
+    t = tasks[args.task_id]
+    print(
+        f"id: {t.id}\n"
+        f"title: {t.title_ja} / {t.title_en}\n"
+        f"portal: {t.portal.name_ja} {t.portal.url}\n"
+        f"category: {t.category}\n"
+        f"difficulty: {t.difficulty}\n"
+        f"success: {t.success.type} [{', '.join(t.success.fields)}]\n"
+        f"stop_before_submit: {t.stop_before_submit}"
+    )
     return 0
 
 
@@ -101,7 +123,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=f"jpbench {_version()}")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("list", help="list tasks").set_defaults(func=cmd_list)
+    lp = sub.add_parser("list", help="list tasks")
+    lp.add_argument("--category")
+    lp.add_argument("--difficulty")
+    lp.set_defaults(func=cmd_list)
+
+    shp = sub.add_parser("show", help="show one task")
+    shp.add_argument("task_id")
+    shp.set_defaults(func=cmd_show)
     sub.add_parser("validate", help="validate task files").set_defaults(func=cmd_validate)
 
     p = sub.add_parser("prompt", help="render a task as an agent prompt")
