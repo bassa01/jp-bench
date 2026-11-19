@@ -58,24 +58,24 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 53. [ ] validate: exit non-zero when any task is `deprecated` without `replaced_by`
 54. [ ] validate: add `--strict` to treat warnings as errors
 55. [ ] validate: add `--json` for machine-readable output
-56. [ ] validate: check that every `form_fill` task has a `reached_state` success rule
-57. [ ] validate: check that every `reached_state` task defines `state`
-58. [ ] validate: check that `inputs` values are strings, numbers, or lists only
-59. [ ] validate: reject inputs that look like real personal data (phone-number pattern)
+56. [x] validate: check that every `form_fill` task has a `reached_state` success rule
+57. [x] validate: check that every `reached_state` task defines `state`
+58. [x] validate: check that `inputs` values are strings, numbers, or lists only
+59. [x] validate: reject inputs that look like real personal data (phone-number pattern)
 60. [ ] validate: reject inputs that look like real corporate numbers unless marked `fictional: true`
-61. [ ] validate: check that `safety.auth_required` tasks declare `auth_method`
-62. [ ] schema: add `auth_method` enum (none, idpw, gbizid)
-63. [ ] schema: reject `auth_method` set when `auth_required` is false
-64. [ ] task model: expose `requires_login` property
-65. [ ] task model: expose `is_form_fill` property
-66. [ ] task model: expose `is_read_only` property
-67. [ ] schema: add `max_steps` budget per task (integer, 1–200)
-68. [ ] schema: reject `max_steps` below 1
-69. [ ] schema: add `timeout_seconds` per task
-70. [ ] schema: reject `timeout_seconds` above 1800
-71. [ ] schema: add `allowed_domains` list for browser agents
-72. [ ] schema: require `allowed_domains` to include the portal host
-73. [ ] schema: reject `allowed_domains` entries containing paths
+61. [x] validate: check that `safety.auth_required` tasks declare `auth_method`
+62. [x] schema: add `auth_method` enum (none, idpw, gbizid)
+63. [x] schema: reject `auth_method` set when `auth_required` is false
+64. [x] task model: expose `requires_login` property
+65. [x] task model: expose `is_form_fill` property
+66. [x] task model: expose `is_read_only` property
+67. [x] schema: add `max_steps` budget per task (integer, 1–200)
+68. [x] schema: reject `max_steps` below 1
+69. [x] schema: add `timeout_seconds` per task
+70. [x] schema: reject `timeout_seconds` above 1800
+71. [x] schema: add `allowed_domains` list for browser agents
+72. [x] schema: require `allowed_domains` to include the portal host
+73. [x] schema: reject `allowed_domains` entries containing paths
 74. [ ] schema: add `expected_pages` count (informational)
 75. [ ] loader: detect and report duplicate `title_ja` across tasks
 76. [ ] loader: detect tasks whose `portal.url` is not reachable in the offline snapshot list
