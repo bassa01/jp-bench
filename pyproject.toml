@@ -19,6 +19,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["jpbench"]
 
+[tool.setuptools.package-data]
+jpbench = ["py.typed"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
