@@ -65,6 +65,12 @@ def _cases():
         "enum": _case(base, "enum", ["kind"], {"kind": "corp"}, {"kind": "株式会社"}, {"kind": "団体"}, labels={"株式会社": "corp"}),
         "multi_answer": _case(base, "multi_answer", ["address"], {"address": ["A", "B"]}, {"address": "B"}, {"address": "C"}),
         "abstain": _case(base, "abstain", ["answer"], {"answer": "not_found"}, {"answer": "not_found"}, {"answer": "X"}),
+        "url_match": _case(base, "url_match", ["portal_url"], {"portal_url": "https://example.go.jp"}, {"portal_url": "HTTPS://example.go.jp/"}, {"portal_url": "https://other.example"}),
+        "article_match": _case(base, "article_match", ["law_article"], {"law_article": "第3条"}, {"law_article": "第３条"}, {"law_article": "第4条"}),
+        "law_number_match": _case(base, "law_number_match", ["law_number"], {"law_number": "令和1年法律第1号"}, {"law_number": "令和元年法律第一号"}, {"law_number": "令和2年法律第1号"}),
+        "postal_code_match": _case(base, "postal_code_match", ["postal_code"], {"postal_code": "100-0012"}, {"postal_code": "1000012"}, {"postal_code": "100-0013"}),
+        "phone_match": _case(base, "phone_match", ["phone"], {"phone": "03-1234-5678"}, {"phone": "0312345678"}, {"phone": "0312345679"}),
+        "amount_yen_match": _case(base, "amount_yen_match", ["amount"], {"amount": 1000}, {"amount": "1,000円"}, {"amount": "2000"}),
     }
 
 

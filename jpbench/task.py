@@ -21,7 +21,8 @@ OPTIONAL_KEYS = {"version", "deprecated", "replaced_by", "tags", "review_status"
 AUTH_METHODS = {"none", "idpw", "gbizid"}
 SUPPORTED_VERSION = 1
 PERSONAL_PHONE_RE = re.compile(r"0[789]0-?\d{4}-?\d{4}")
-SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state", "boolean", "date_range", "enum", "multi_answer", "abstain"}
+SUCCESS_TYPES = {"field_match", "numeric_tolerance", "set_overlap", "reached_state", "boolean", "date_range", "enum", "multi_answer", "abstain", "url_match", "article_match", "law_number_match", "postal_code_match", "phone_match", "amount_yen_match"}
+TOLERANCE_MODES = {"relative", "absolute"}
 
 REQUIRED_KEYS = {
     "id",
@@ -58,6 +59,8 @@ class Success:
     min_overlap: float = 1.0
     state: str | None = None
     labels: dict[str, str] = field(default_factory=dict)
+    partial_credit: bool = True
+    tolerance_mode: str = "relative"
 
 
 @dataclass(frozen=True)
@@ -166,7 +169,7 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     _require(isinstance(succ, dict), task_id, "success must be a mapping")
     stype = succ.get("type")
     _require(stype in SUCCESS_TYPES, task_id, f"success.type must be one of {sorted(SUCCESS_TYPES)}")
-    if stype in {"field_match", "numeric_tolerance", "set_overlap", "boolean", "date_range", "enum", "multi_answer", "abstain"}:
+    if stype in {"field_match", "numeric_tolerance", "set_overlap", "boolean", "date_range", "enum", "multi_answer", "abstain", "url_match", "article_match", "law_number_match", "postal_code_match", "phone_match", "amount_yen_match"}:
         _require(bool(succ.get("fields")), task_id, f"success.fields required for {stype}")
     if stype == "reached_state":
         _require(bool(succ.get("state")), task_id, "success.state required for reached_state")
@@ -176,6 +179,7 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
     _require(0.0 <= overlap <= 1.0, task_id, "success.min_overlap must be within 0-1")
     _require(float(succ.get("tolerance", 0.0)) >= 0.0, task_id, "success.tolerance must not be negative")
     _require(float(succ.get("tolerance", 0.0)) <= 0.5, task_id, "success.tolerance must be at most 0.5")
+    _require(str(succ.get("tolerance_mode", "relative")) in TOLERANCE_MODES, task_id, "success.tolerance_mode must be relative or absolute")
     _require("tolerance" not in succ or stype == "numeric_tolerance", task_id, "success.tolerance only applies to numeric_tolerance")
     _require("state" not in succ or stype == "reached_state", task_id, "success.state only applies to reached_state")
 
@@ -231,6 +235,8 @@ def parse_task(raw: dict[str, Any], path: Path | None = None) -> Task:
             min_overlap=float(succ.get("min_overlap", 1.0)),
             state=succ.get("state"),
             labels={str(k): str(v) for k, v in dict(succ.get("labels") or {}).items()},
+            partial_credit=bool(succ.get("partial_credit", True)),
+            tolerance_mode=str(succ.get("tolerance_mode", "relative")),
         ),
         stop_before_submit=stop,
         auth_required=bool(safety.get("auth_required", False)),
