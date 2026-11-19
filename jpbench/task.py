@@ -133,7 +133,14 @@ def load_tasks(directory: Path | str) -> list[Task]:
         if path.name.startswith("_"):
             continue
         with path.open(encoding="utf-8") as fh:
-            raw = yaml.safe_load(fh)
+            try:
+                raw = yaml.safe_load(fh)
+            except yaml.YAMLError as exc:
+                mark = getattr(exc, "problem_mark", None)
+                where = f" at line {mark.line + 1}" if mark is not None else ""
+                raise TaskError(f"{path.name}: YAML parse error{where}") from exc
+        if not isinstance(raw, dict):
+            raise TaskError(f"{path.name}: top level must be a mapping")
         task = parse_task(raw, path)
         _require(task.id not in seen, task.id, "duplicate task id")
         seen.add(task.id)
