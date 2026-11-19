@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 
 from .task import Task
@@ -35,3 +36,8 @@ def render_prompt(task: Task, lang: str = "en") -> str:
         keys = ", ".join(f'"{f}": ...' for f in task.success.fields)
         lines.append(f"Answer with JSON only: {{{keys}}}")
     return "\n".join(lines)
+
+
+def prompt_hash(task: Task, lang: str = "en") -> str:
+    """Short stable fingerprint of the rendered prompt, stored with results for reproducibility."""
+    return hashlib.sha256(render_prompt(task, lang).encode("utf-8")).hexdigest()[:16]
