@@ -482,16 +482,16 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 
 ## P5. Adapters and runner (471–600)
 471. [x] runner: add model adapter interface and offline FixedAdapter
-472. [ ] runner: add `EchoAdapter` that returns the prompt for debugging
-473. [ ] runner: add `ErrorAdapter` that always raises (for error-path tests)
-474. [ ] runner: add `RecordingAdapter` that stores prompts in memory
-475. [ ] runner: add `ReplayAdapter` that reads outputs from a JSONL file
-476. [ ] runner: ReplayAdapter fails when a prompt hash is missing
-477. [ ] runner: add `run_suite(adapter, tasks)` returning per-task results
-478. [ ] runner: run_suite records the prompt hash for each task
-479. [ ] runner: run_suite records the raw output for each task
-480. [ ] runner: run_suite records parse error kind for each task
-481. [ ] runner: run_suite continues after one task fails
+472. [x] runner: add `EchoAdapter` that returns the prompt for debugging
+473. [x] runner: add `ErrorAdapter` that always raises (for error-path tests)
+474. [x] runner: add `RecordingAdapter` that stores prompts in memory
+475. [x] runner: add `ReplayAdapter` that reads outputs from a JSONL file
+476. [x] runner: ReplayAdapter fails when a prompt hash is missing
+477. [x] runner: add `run_suite(adapter, tasks)` returning per-task results
+478. [x] runner: run_suite records the prompt hash for each task
+479. [x] runner: run_suite records the raw output for each task
+480. [x] runner: run_suite records parse error kind for each task
+481. [x] runner: run_suite continues after one task fails
 482. [ ] runner: run_suite stops early when `--fail-fast` is set
 483. [ ] runner: run_suite respects the task `timeout_seconds`
 484. [ ] runner: timeouts produce a TIMEOUT result, not an exception
@@ -504,7 +504,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 491. [ ] runner: add `--seed` for deterministic task order
 492. [ ] runner: add `--repeat K` to run each task K times
 493. [ ] runner: compute pass@1 and pass@K when repeat > 1
-494. [ ] runner: write results as JSON Lines to `results/<run-id>.jsonl`
+494. [x] runner: write results as JSON Lines to `results/<run-id>.jsonl`
 495. [ ] runner: run id derived from timestamp and adapter name
 496. [ ] runner: write run metadata file alongside results
 497. [ ] runner: metadata includes jpbench version, prompt hashes, and adapter name
@@ -513,7 +513,7 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 500. [ ] runner: resume an interrupted run from the last complete line
 501. [ ] runner: detect a half-written last line and drop it safely
 502. [ ] runner: lock the results file while writing (fcntl, POSIX only)
-503. [ ] runner: write results atomically using a temp file and rename
+503. [x] runner: write results atomically using a temp file and rename
 504. [ ] runner: exit code 2 when some tasks errored
 505. [ ] runner: exit code 3 when a safety violation occurred
 506. [ ] runner: print a summary table at the end
