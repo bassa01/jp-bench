@@ -100,6 +100,17 @@ def cmd_report(args: argparse.Namespace) -> int:
         print("no tasks with gold answers", file=sys.stderr)
         return 1
     summary = summarize(results, {t.id: t.difficulty for t in tasks})
+    if args.format == "csv":
+        import csv
+        import io
+
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+        writer.writerow(["task_id", "passed", "score", "detail"])
+        for r in results:
+            writer.writerow([r.task_id, r.passed, f"{r.score:.4f}", r.detail])
+        print(buf.getvalue(), end="")
+        return 0
     lines = ["# JP-Bench report", "", "| task | result | score | detail |", "|---|---|---|---|"]
     for r in results:
         lines.append(f"| {r.task_id} | {'PASS' if r.passed else 'FAIL'} | {r.score:.2f} | {r.detail} |")
@@ -143,6 +154,7 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("report", help="Markdown report from predictions and gold answers")
     r.add_argument("--pred", required=True)
     r.add_argument("--gold", required=True)
+    r.add_argument("--format", choices=["md", "csv"], default="md")
     r.set_defaults(func=cmd_report)
 
     s = sub.add_parser("score", help="score predictions against gold answers")

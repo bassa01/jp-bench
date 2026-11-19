@@ -20,3 +20,15 @@ def test_report_outputs_markdown(tmp_path, capsys):
     out = capsys.readouterr().out
     assert out.startswith("# JP-Bench report")
     assert "| invoice-number-verify | PASS |" in out
+
+
+def test_report_csv(tmp_path, capsys):
+    pred = tmp_path / "pred.json"
+    gold = tmp_path / "gold.json"
+    row = {"name": "A", "registration_date": "2020-01-01", "active": True}
+    pred.write_text(json.dumps({"invoice-number-verify": row}), encoding="utf-8")
+    gold.write_text(json.dumps({"invoice-number-verify": row}), encoding="utf-8")
+    assert main(["report", "--pred", str(pred), "--gold", str(gold), "--format", "csv"]) == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[0] == "task_id,passed,score,detail"
+    assert lines[1].startswith("invoice-number-verify,True,1.0000,")
