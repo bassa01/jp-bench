@@ -819,11 +819,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 802. [ ] task content: allowed_domains: set for every task
 803. [ ] task content: allowed_domains: test that each task's portal host is allowed
 804. [ ] task content: allowed_domains: list external domains that may appear in redirects
-805. [ ] task content: review_status: mark each task draft, reviewed, or published
+805. [x] task content: review_status: mark each task draft, reviewed, or published
 806. [ ] task content: review_status: publish only reviewed tasks in v0.2
 807. [ ] task content: owner: fill owner for each task
-808. [ ] task content: created and updated dates for each task
-809. [ ] task content: source documents list for each task
+808. [x] task content: created and updated dates for each task
+809. [x] task content: source documents list for each task
 810. [ ] task content: snapshot_date for each task
 811. [ ] task content: examples: one worked example per family in `examples/`
 812. [ ] task content: examples: examples are never used as gold
@@ -860,11 +860,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 843. [ ] task content: link check: flag URLs that redirect to a different host
 844. [ ] task content: spell check Japanese instructions with a dictionary file
 845. [ ] task content: spell check English instructions
-846. [ ] task content: style guide for instructions (short sentences, no jargon without gloss)
+846. [x] task content: style guide for instructions (short sentences, no jargon without gloss)
 847. [ ] task content: style guide: use です/ます in Japanese instructions
 848. [ ] task content: style guide: use imperative in English instructions
-849. [ ] task content: style guide: state the output format in the last line
-850. [ ] task content: style guide: avoid "please" in English instructions
+849. [x] task content: style guide: state the output format in the last line
+850. [x] task content: style guide: avoid "please" in English instructions
 851. [ ] task content: release: tag task set v0.2
 852. [ ] task content: release: write task-set changelog
 853. [ ] task content: release: publish task manifest with checksums
