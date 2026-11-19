@@ -16,6 +16,9 @@ class TaskResult:
     score: float
     detail: str
 
+    def to_dict(self) -> dict[str, Any]:
+        return {"task_id": self.task_id, "passed": self.passed, "score": self.score, "detail": self.detail}
+
 
 def _field_match(task: Task, pred: dict[str, Any], gold: dict[str, Any]) -> TaskResult:
     hits = 0
