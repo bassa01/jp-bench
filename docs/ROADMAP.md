@@ -670,11 +670,11 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 655. [ ] report: add `--title` flag for the report heading
 656. [x] report: add `--output` flag to write the report to a file
 657. [x] report: refuse to overwrite an existing report without `--force`
-658. [ ] report: HTML output format with the same content
-659. [ ] report: HTML output escapes all values
-660. [ ] report: HTML output has no external scripts or fonts
-661. [ ] report: JSON output format for dashboards
-662. [ ] report: JSON output includes schema version
+658. [x] report: HTML output format with the same content
+659. [x] report: HTML output escapes all values
+660. [x] report: HTML output has no external scripts or fonts
+661. [x] report: JSON output format for dashboards
+662. [x] report: JSON output includes schema version
 663. [ ] report: compare two runs side by side (Markdown table)
 664. [ ] report: highlight tasks that regressed between runs
 665. [ ] report: highlight tasks that improved between runs
@@ -683,13 +683,13 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 668. [ ] report: include portal name in rows
 669. [ ] report: include gold source in an appendix
 670. [ ] report: include jpbench version and date in footer
-671. [ ] report: test golden output for an empty run
-672. [ ] report: test golden output for a run where all tasks fail
-673. [ ] report: test golden output for a run where all tasks pass
+671. [x] report: test golden output for an empty run
+672. [x] report: test golden output for a run where all tasks fail
+673. [x] report: test golden output for a run where all tasks pass
 674. [ ] report: test that report handles unicode titles
-675. [ ] report: test that report escapes pipe characters in Markdown cells
-676. [ ] report: test that CSV quotes fields containing commas
-677. [ ] report: test that HTML escapes angle brackets
+675. [x] report: test that report escapes pipe characters in Markdown cells
+676. [x] report: test that CSV quotes fields containing commas
+677. [x] report: test that HTML escapes angle brackets
 678. [ ] report: performance: render report for 1000 rows under 1 second
 679. [ ] leaderboard: local leaderboard file (`leaderboard.json`) format
 680. [ ] leaderboard: add entry from a run with `jpbench leaderboard add`
