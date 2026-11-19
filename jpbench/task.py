@@ -130,6 +130,8 @@ def load_tasks(directory: Path | str) -> list[Task]:
     tasks: list[Task] = []
     seen: set[str] = set()
     for path in sorted(directory.glob("*.yaml")):
+        if path.name.startswith("_"):
+            continue
         with path.open(encoding="utf-8") as fh:
             raw = yaml.safe_load(fh)
         task = parse_task(raw, path)
