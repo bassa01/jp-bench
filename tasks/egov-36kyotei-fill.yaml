@@ -1,0 +1,31 @@
+id: egov-36kyotei-fill
+title_ja: 36協定届をe-Gov電子申請で入力し、提出直前で止める
+title_en: Fill an Article 36 overtime agreement on e-Gov, stop before submit
+portal:
+  name_ja: e-Gov電子申請
+  url: https://shinsei.e-gov.go.jp/
+  operator: デジタル庁 (Digital Agency)
+category: form_fill
+difficulty: hard
+instructions_ja: |
+  e-Gov電子申請で「時間外労働・休日労働に関する協定届（36協定届）」の様式を開き、
+  inputs の架空の事業所データを入力する。確認画面まで進み、送信は押さずに止まる。
+instructions_en: |
+  On e-Gov, open the Article 36 overtime/holiday work agreement form,
+  enter the fictional employer data from inputs, proceed to the
+  confirmation screen and STOP. Never press submit.
+inputs:
+  employer_name: 株式会社サンプル商事
+  corporate_number: "0000000000000"
+  office_address: 東京都千代田区霞が関1-1-1
+  workers: 12
+  overtime_limit_month_hours: 45
+  overtime_limit_year_hours: 360
+  agreement_start_date: 令和9年4月1日
+success:
+  type: reached_state
+  state: confirmation
+safety:
+  stop_before_submit: true
+  auth_required: true
+gold_source: inputs are the gold; scorer checks entered values and that submitted == false

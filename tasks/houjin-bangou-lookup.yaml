@@ -1,0 +1,26 @@
+id: houjin-bangou-lookup
+title_ja: 法人番号公表サイトで法人番号と所在地を調べる
+title_en: Look up a corporate number and registered address
+portal:
+  name_ja: 国税庁法人番号公表サイト
+  url: https://www.houjin-bangou.nta.go.jp/
+  operator: 国税庁 (National Tax Agency)
+category: lookup
+difficulty: easy
+instructions_ja: |
+  法人番号公表サイトで inputs の法人名と都道府県を検索し、
+  該当する法人の13桁の法人番号と本店所在地を答える。同名法人が複数ある場合は都道府県で絞る。
+instructions_en: |
+  Search the corporate number site for the company name in inputs,
+  narrow by prefecture if several companies share the name, and return
+  the 13-digit corporate number and registered head-office address.
+inputs:
+  company_name: デジタル庁
+  prefecture: 東京都
+success:
+  type: field_match
+  fields: [corporate_number, address]
+safety:
+  stop_before_submit: false
+  auth_required: false
+gold_source: 国税庁 法人番号システム Web-API (requires application ID), fetched at eval time

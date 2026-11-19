@@ -1,0 +1,29 @@
+id: jgrants-open-subsidies
+title_ja: jGrantsで条件に合う募集中の補助金を列挙する
+title_en: List open subsidies that match a company profile
+portal:
+  name_ja: jGrants（補助金電子申請システム）
+  url: https://www.jgrants-portal.go.jp/
+  operator: デジタル庁 (Digital Agency)
+category: search
+difficulty: hard
+instructions_ja: |
+  jGrantsで、inputs の条件に合い、評価時点で募集中の補助金をすべて探し、
+  補助金の名称を列挙する。募集終了のものは含めない。
+instructions_en: |
+  On jGrants, find every subsidy that is open for applications at
+  evaluation time and matches the profile in inputs. Return the list of
+  subsidy titles. Exclude closed calls.
+inputs:
+  prefecture: 神奈川県
+  employees: 10
+  industry: 情報通信業
+  keyword: IT導入
+success:
+  type: set_overlap
+  fields: [subsidy_titles]
+  min_overlap: 0.8
+safety:
+  stop_before_submit: false
+  auth_required: false
+gold_source: jGrants public API snapshot taken at the start of each eval run

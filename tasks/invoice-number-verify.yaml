@@ -1,0 +1,25 @@
+id: invoice-number-verify
+title_ja: 適格請求書発行事業者の登録番号を照合する
+title_en: Verify a qualified-invoice registration number
+portal:
+  name_ja: 国税庁インボイス制度 適格請求書発行事業者公表サイト
+  url: https://www.invoice-kohyo.nta.go.jp/
+  operator: 国税庁 (National Tax Agency)
+category: lookup
+difficulty: easy
+instructions_ja: |
+  公表サイトで inputs の登録番号（T＋13桁）を検索し、
+  氏名または名称、登録年月日、現在も登録が有効かどうかを答える。
+instructions_en: |
+  Search the publication site for the registration number in inputs
+  (T + 13 digits) and return the registered name, the registration date,
+  and whether the registration is currently active.
+inputs:
+  registration_number: T0000000000000
+success:
+  type: field_match
+  fields: [name, registration_date, active]
+safety:
+  stop_before_submit: false
+  auth_required: false
+gold_source: 適格請求書発行事業者公表システム Web-API (requires application ID), fetched at eval time; set registration_number per run

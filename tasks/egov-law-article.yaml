@@ -1,0 +1,26 @@
+id: egov-law-article
+title_ja: e-Gov法令検索で現行の条文を取り出す
+title_en: Extract the current text of a statutory article
+portal:
+  name_ja: e-Gov法令検索
+  url: https://laws.e-gov.go.jp/
+  operator: デジタル庁 (Digital Agency)
+category: extract
+difficulty: medium
+instructions_ja: |
+  e-Gov法令検索で inputs の法令を開き、指定の条の現行の本文を、
+  項番号を含めてそのまま取り出す。法令番号も答える。
+instructions_en: |
+  Open the law in inputs on e-Gov law search and extract the current
+  text of the given article verbatim, including paragraph numbers.
+  Also return the law number.
+inputs:
+  law_name: 労働基準法
+  article: 第三十二条
+success:
+  type: field_match
+  fields: [law_number, article_text]
+safety:
+  stop_before_submit: false
+  auth_required: false
+gold_source: e-Gov 法令API, fetched at eval time
