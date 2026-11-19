@@ -190,10 +190,10 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 183. [ ] normalize: URL: strip default ports `:443`
 184. [ ] normalize: URL: strip `www.` prefix for comparison
 185. [ ] normalize: list fields: normalize each element then sort
-186. [ ] normalize: list fields: drop empty elements
-187. [ ] normalize: list fields: dedupe after normalization
-188. [ ] normalize: boolean fields: accept `はい`/`いいえ`, `有効`/`無効`, `true`/`false`
-189. [ ] normalize: boolean fields: map `有` and `無` for existence questions
+186. [x] normalize: list fields: drop empty elements
+187. [x] normalize: list fields: dedupe after normalization
+188. [x] normalize: boolean fields: accept `はい`/`いいえ`, `有効`/`無効`, `true`/`false`
+189. [x] normalize: boolean fields: map `有` and `無` for existence questions
 190. [ ] normalize: enum fields: accept Japanese labels and map to codes
 191. [ ] normalize: enum fields: fail on unknown labels with the list of valid ones
 192. [ ] normalize: text fields: collapse repeated punctuation (`。。` → `。`)
@@ -899,26 +899,26 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 880. [ ] tests: test that README commands still work
 881. [ ] tests: test on Windows-style newlines in task YAML
 882. [ ] tests: test on non-UTF-8 locale (encoding fixtures)
-883. [ ] ci: run on Python 3.10–3.13 (3.10 added; keep)
+883. [x] ci: run on Python 3.10–3.13 (3.10 added; keep)
 884. [ ] ci: run on macOS runner in addition to Ubuntu
 885. [ ] ci: run on Windows runner for path handling
 886. [ ] ci: upload coverage artifact
 887. [ ] ci: cache pip (done); verify cache hit in logs
-888. [ ] ci: concurrency group to cancel superseded runs
-889. [ ] ci: set minimal permissions (contents: read) in workflow
+888. [x] ci: concurrency group to cancel superseded runs
+889. [x] ci: set minimal permissions (contents: read) in workflow
 890. [ ] ci: pin actions to commit SHAs
-891. [ ] ci: dependabot for GitHub Actions
-892. [ ] ci: dependabot for pip dependencies
+891. [x] ci: dependabot for GitHub Actions
+892. [x] ci: dependabot for pip dependencies
 893. [ ] ci: nightly job runs `validate` and `prompt --check`
 894. [ ] ci: nightly job checks source drift (manual data, report only)
-895. [ ] ci: PR template requires running `jpbench validate` output
+895. [x] ci: PR template requires running `jpbench validate` output
 896. [ ] ci: block merges to main without passing checks (branch protection, documented)
 897. [ ] ci: release workflow builds sdist and wheel
 898. [ ] ci: release workflow checks the wheel installs and runs `jpbench --version`
 899. [ ] ci: release workflow attaches task manifest to the GitHub release
 900. [ ] ci: release workflow never publishes from forks
 901. [ ] docs: README quick start tested in CI
-902. [ ] docs: README links to CONTRIBUTING and ROADMAP
+902. [x] docs: README links to CONTRIBUTING and ROADMAP
 903. [ ] docs: README table of tasks matches `jpbench list` output (test)
 904. [ ] docs: README explains safety rule with an example
 905. [ ] docs: README explains scoring with an example
@@ -941,12 +941,12 @@ Each item is one commit-sized task. `[x]` means it is on `main`; `[ ]` means pla
 922. [ ] docs: FAQ on costs and budgets
 923. [ ] docs: security policy (SECURITY.md) with reporting path
 924. [ ] docs: code of conduct
-925. [ ] docs: issue templates (bug, task proposal, scoring question)
-926. [ ] docs: pull request template with checklist
+925. [x] docs: issue templates (bug, task proposal, scoring question)
+926. [x] docs: pull request template with checklist
 927. [ ] docs: CODEOWNERS for tasks and scoring
 928. [ ] docs: license headers on source files
-929. [ ] docs: notice file for third-party data sources
-930. [ ] docs: glossary of Japanese administrative terms with English glosses
+929. [x] docs: notice file for third-party data sources
+930. [x] docs: glossary of Japanese administrative terms with English glosses
 931. [ ] release: v0.2.0 candidate with all v0.2 tasks reviewed
 932. [ ] release: v0.2.0 changelog and version bump
 933. [ ] release: v0.2.0 tag and GitHub release
